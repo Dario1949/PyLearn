@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es" class="%sveltekit.theme%">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+		<script>
+			// Cargar tema inmediatamente
+			(function() {
+				function applyTheme() {
+					let userId = null;
+					try {
+						const authUser = localStorage.getItem('auth_user');
+						if (authUser) {
+							const user = JSON.parse(authUser);
+							userId = user.id;
+						}
+					} catch (e) {}
+					
+					if (userId) {
+						const themeColor = localStorage.getItem(`theme-color-${userId}`);
+						const backgroundColor = localStorage.getItem(`background-color-${userId}`);
+						const cardColor = localStorage.getItem(`card-color-${userId}`);
+						const textColor = localStorage.getItem(`text-color-${userId}`);
+						
+						if (themeColor || backgroundColor || cardColor || textColor) {
+							const finalTheme = themeColor || '#d97706';
+							const finalBg = backgroundColor || '#1a202c';
+							const finalCard = cardColor || '#2d3748';
+							const finalText = textColor || '#ffffff';
+							
+							// Crear estilo con !important
+							const style = document.createElement('style');
+							style.id = 'theme-override';
+							style.textContent = `
+								:root {
+									--primary: ${finalTheme} !important;
+									--background: ${finalBg} !important;
+									--card: ${finalCard} !important;
+									--foreground: ${finalText} !important;
+								}
+								body {
+									background-color: ${finalBg} !important;
+									color: ${finalText} !important;
+								}
+							`;
+							
+							// Remover estilo anterior si existe
+							const existing = document.getElementById('theme-override');
+							if (existing) existing.remove();
+							
+							document.head.appendChild(style);
+							localStorage.setItem('currentUserId', userId);
+						}
+					}
+				}
+				
+				// Aplicar inmediatamente y cuando DOM esté listo
+				applyTheme();
+				document.addEventListener('DOMContentLoaded', applyTheme);
+			})();
+		</script>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" class="font-sans">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

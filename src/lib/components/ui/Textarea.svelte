@@ -1,0 +1,9 @@
+<script>
+    // Usamos Svelte 5. 'value' es bindable, y podemos pasar clases y otros atributos.
+    let { value = $bindable(""), class: className = "", ...props } = $props();
+
+    const baseClasses =
+        "flex min-h-[80px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+</script>
+
+<textarea class="{baseClasses} {className}" bind:value {...props}></textarea>

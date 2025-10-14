@@ -1,0 +1,103 @@
+[
+  {
+    "userId": "c9457142-1ad4-4a98-a8ac-ffbbb71478ca",
+    "points": 0,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [],
+    "earnedBadges": [],
+    "completedChallenges": [],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2024-12-15"
+  },
+  {
+    "userId": "2353a564-07ec-49bb-8a18-0f7fdd0c9826",
+    "points": 50,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [
+      "python-basics",
+      "control-structures"
+    ],
+    "earnedBadges": [],
+    "completedChallenges": [
+      "hello_world",
+      "simple_calculator"
+    ],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2025-10-13"
+  },
+  {
+    "userId": "13272d4e-5e5f-4053-802b-71298b9a554b",
+    "points": 45,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [
+      "python-basics",
+      "algorithms",
+      "control-structures"
+    ],
+    "earnedBadges": [],
+    "completedChallenges": [
+      "hello_world",
+      "temperature_converter",
+      "prime_checker",
+      "simple_calculator",
+      "class_design"
+    ],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2025-10-13",
+    "totalPointsEarned": 110
+  },
+  {
+    "userId": "6ea19c7c-1b6f-4471-ac99-4bdfcdd1cd4f",
+    "points": 0,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [],
+    "earnedBadges": [],
+    "completedChallenges": [],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2024-10-01"
+  },
+  {
+    "userId": "d6c36b51-120e-45f7-8464-a0a7825a1f6e",
+    "points": 80,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [
+      "python-basics",
+      "functions"
+    ],
+    "earnedBadges": [],
+    "completedChallenges": [
+      "hello_world",
+      "sum_function"
+    ],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2025-10-13"
+  },
+  {
+    "userId": "f4e8223d-5570-4312-9a57-517b7bdf3378",
+    "points": 0,
+    "level": 1,
+    "progress": 0,
+    "completedModules": [],
+    "earnedBadges": [],
+    "completedChallenges": [],
+    "averageScore": 0,
+    "streak": 0,
+    "status": "active",
+    "lastActivity": "2025-10-13"
+  }
+]

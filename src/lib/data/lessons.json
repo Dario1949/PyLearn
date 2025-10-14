@@ -1,0 +1,110 @@
+[
+  {
+    "id": "python-intro",
+    "moduleId": "python-basics",
+    "title": "Introducción a Python",
+    "content": "# Introducción a Python\n\nPython es un lenguaje de programación fácil de aprender y muy poderoso.\n\n## Variables\n```python\nnombre = \"Juan\"\nedad = 25\n```"
+  },
+  {
+    "id": "data-types",
+    "moduleId": "python-basics", 
+    "title": "Tipos de Datos",
+    "content": "# Tipos de Datos en Python\n\n## Números\n```python\nentero = 42\nflotante = 3.14\n```\n\n## Strings\n```python\ntexto = \"Hola mundo\"\n```"
+  },
+  {
+    "id": "if-else",
+    "moduleId": "control-structures",
+    "title": "Condicionales if/else",
+    "content": "# Condicionales en Python\n\n```python\nedad = 18\nif edad >= 18:\n    print(\"Eres mayor de edad\")\nelse:\n    print(\"Eres menor de edad\")\n```"
+  },
+  {
+    "id": "loops",
+    "moduleId": "control-structures",
+    "title": "Bucles for y while",
+    "content": "# Bucles en Python\n\n## Bucle for\n```python\nfor i in range(5):\n    print(i)\n```\n\n## Bucle while\n```python\ncontador = 0\nwhile contador < 5:\n    print(contador)\n    contador += 1\n```"
+  },
+  {
+    "id": "function-basics",
+    "moduleId": "functions",
+    "title": "Conceptos Básicos de Funciones",
+    "content": "# Funciones en Python\n\n```python\ndef saludar(nombre):\n    return f\"Hola, {nombre}!\"\n\nresultado = saludar(\"Ana\")\nprint(resultado)\n```"
+  },
+  {
+    "id": "function-parameters",
+    "moduleId": "functions",
+    "title": "Parámetros y Argumentos",
+    "content": "# Parámetros en Funciones\n\n## Parámetros por defecto\n```python\ndef saludar(nombre, saludo=\"Hola\"):\n    return f\"{saludo}, {nombre}!\"\n```"
+  },
+  {
+    "id": "function-return",
+    "moduleId": "functions",
+    "title": "Valores de Retorno",
+    "content": "# Valores de Retorno\n\n```python\ndef calcular_area(radio):\n    pi = 3.14159\n    area = pi * radio ** 2\n    return area\n\nresultado = calcular_area(5)\n```"
+  },
+  {
+    "id": "lists-intro",
+    "moduleId": "data-structures",
+    "title": "Introducción a Listas",
+    "content": "# Listas en Python\n\n```python\nfrutas = [\"manzana\", \"banana\", \"naranja\"]\nprint(frutas[0])  # manzana\nfrutas.append(\"uva\")\n```"
+  },
+  {
+    "id": "dictionaries",
+    "moduleId": "data-structures",
+    "title": "Diccionarios",
+    "content": "# Diccionarios en Python\n\n```python\nestudiante = {\n    \"nombre\": \"María\",\n    \"edad\": 20,\n    \"carrera\": \"Ingeniería\"\n}\nprint(estudiante[\"nombre\"])\n```"
+  },
+  {
+    "id": "list-methods",
+    "moduleId": "data-structures",
+    "title": "Métodos de Listas",
+    "content": "# Métodos de Listas\n\n```python\nnumeros = [3, 1, 4, 1, 5]\nnumeros.sort()  # Ordenar\nnumeros.reverse()  # Invertir\nmaximo = max(numeros)\n```"
+  },
+  {
+    "id": "algorithm-basics",
+    "moduleId": "algorithms",
+    "title": "Fundamentos de Algoritmos",
+    "content": "# Algoritmos Básicos\n\nUn algoritmo es una secuencia de pasos para resolver un problema.\n\n```python\n# Buscar un elemento\ndef buscar(lista, elemento):\n    for i, valor in enumerate(lista):\n        if valor == elemento:\n            return i\n    return -1\n```"
+  },
+  {
+    "id": "recursion",
+    "moduleId": "algorithms",
+    "title": "Recursión",
+    "content": "# Recursión\n\n```python\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nresultado = factorial(5)\n```"
+  },
+  {
+    "id": "complexity",
+    "moduleId": "algorithms",
+    "title": "Complejidad Algorítmica",
+    "content": "# Complejidad Algorítmica\n\n- **O(1)**: Tiempo constante\n- **O(n)**: Tiempo lineal\n- **O(n²)**: Tiempo cuadrático\n\n```python\n# O(n) - Búsqueda lineal\ndef buscar_lineal(lista, objetivo):\n    for elemento in lista:\n        if elemento == objetivo:\n            return True\n    return False\n```"
+  },
+  {
+    "id": "sorting-algorithms",
+    "moduleId": "algorithms",
+    "title": "Algoritmos de Ordenamiento",
+    "content": "# Algoritmos de Ordenamiento\n\n## Ordenamiento Burbuja\n```python\ndef burbuja(lista):\n    n = len(lista)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if lista[j] > lista[j+1]:\n                lista[j], lista[j+1] = lista[j+1], lista[j]\n```"
+  },
+  {
+    "id": "file-handling",
+    "moduleId": "advanced-topics",
+    "title": "Manejo de Archivos",
+    "content": "# Manejo de Archivos\n\n```python\n# Leer archivo\nwith open('archivo.txt', 'r') as f:\n    contenido = f.read()\n\n# Escribir archivo\nwith open('nuevo.txt', 'w') as f:\n    f.write('Hola mundo')\n```"
+  },
+  {
+    "id": "oop-basics",
+    "moduleId": "advanced-topics",
+    "title": "Programación Orientada a Objetos",
+    "content": "# Programación Orientada a Objetos\n\n```python\nclass Persona:\n    def __init__(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad\n    \n    def saludar(self):\n        return f\"Hola, soy {self.nombre}\"\n\np = Persona(\"Ana\", 25)\nprint(p.saludar())\n```"
+  },
+  {
+    "id": "error-handling",
+    "moduleId": "advanced-topics",
+    "title": "Manejo de Errores",
+    "content": "# Manejo de Errores\n\n```python\ntry:\n    numero = int(input(\"Ingresa un número: \"))\n    resultado = 10 / numero\nexcept ValueError:\n    print(\"Error: No es un número válido\")\nexcept ZeroDivisionError:\n    print(\"Error: No se puede dividir por cero\")\n```"
+  },
+  {
+    "id": "modules-packages",
+    "moduleId": "advanced-topics",
+    "title": "Módulos y Paquetes",
+    "content": "# Módulos y Paquetes\n\n```python\n# Importar módulo completo\nimport math\nprint(math.pi)\n\n# Importar función específica\nfrom datetime import datetime\nahora = datetime.now()\n\n# Crear tu propio módulo\n# archivo: mi_modulo.py\ndef mi_funcion():\n    return \"Hola desde mi módulo\"\n```"
+  }
+]

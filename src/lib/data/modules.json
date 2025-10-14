@@ -1,0 +1,56 @@
+[
+  {
+    "id": "python-basics",
+    "title": "Fundamentos de Python",
+    "description": "Aprende los conceptos básicos de Python: variables, tipos de datos y operaciones",
+    "icon": "🐍",
+    "difficulty": "Principiante",
+    "duration": "60 min",
+    "challengeId": "hello_world"
+  },
+  {
+    "id": "control-structures",
+    "title": "Estructuras de Control",
+    "description": "Domina if/else, bucles for y while para controlar el flujo de tu programa",
+    "icon": "🔄",
+    "difficulty": "Principiante", 
+    "duration": "90 min",
+    "challengeId": "simple_calculator"
+  },
+  {
+    "id": "functions",
+    "title": "Funciones",
+    "description": "Aprende a crear y usar funciones para organizar tu código",
+    "icon": "⚙️",
+    "difficulty": "Intermedio",
+    "duration": "120 min",
+    "challengeId": "sum_function"
+  },
+  {
+    "id": "data-structures",
+    "title": "Estructuras de Datos",
+    "description": "Trabaja con listas, diccionarios y tuplas para manejar datos complejos",
+    "icon": "📊",
+    "difficulty": "Intermedio",
+    "duration": "150 min",
+    "challengeId": "list_operations"
+  },
+  {
+    "id": "algorithms",
+    "title": "Algoritmos",
+    "description": "Implementa algoritmos fundamentales y resuelve problemas complejos",
+    "icon": "🧮",
+    "difficulty": "Avanzado",
+    "duration": "180 min",
+    "challengeId": "prime_checker"
+  },
+  {
+    "id": "advanced-topics",
+    "title": "Temas Avanzados",
+    "description": "Explora conceptos avanzados como manejo de archivos y programación orientada a objetos",
+    "icon": "🚀",
+    "difficulty": "Avanzado",
+    "duration": "200 min",
+    "challengeId": "password_validator"
+  }
+]

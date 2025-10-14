@@ -1,0 +1,67 @@
+[
+  {
+    "id": "c9457142-1ad4-4a98-a8ac-ffbbb71478ca",
+    "name": "luis lopéz",
+    "email": "luislopez123@cesmag.edu.co",
+    "password": "123456",
+    "program": null,
+    "role": "admin",
+    "bio": "",
+    "avatar": "",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "id": "2353a564-07ec-49bb-8a18-0f7fdd0c9826",
+    "name": "luis lopéz",
+    "email": "luislopez12345@cesmag.edu.co",
+    "password": "123456",
+    "program": "Ingeniería de Sistemas",
+    "role": "student",
+    "bio": "",
+    "avatar": "/uploads/avatars/luislopez12345-1759638628056.jpg",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "id": "13272d4e-5e5f-4053-802b-71298b9a554b",
+    "name": "Alejandro Lopez",
+    "email": "alejo123@cesmag.edu.co",
+    "password": "123456",
+    "program": "Ingeniería de Sistemas",
+    "role": "student",
+    "bio": "",
+    "avatar": "/uploads/avatars/alejo123-1760044400755.jpg",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "id": "6ea19c7c-1b6f-4471-ac99-4bdfcdd1cd4f",
+    "name": "Luis Alejandro Lopez Davila",
+    "email": "luislopez.0259@cesmag.edu.co",
+    "password": "123456",
+    "role": "teacher",
+    "bio": "",
+    "avatar": "/uploads/avatars/luislopez.0259-1760142801353.jpg",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "id": "d6c36b51-120e-45f7-8464-a0a7825a1f6e",
+    "name": "juan eduardo",
+    "email": "juaneduardo@cesmag.edu.co",
+    "password": "123456",
+    "program": "Ingeniería de Sistemas",
+    "role": "student",
+    "bio": "",
+    "avatar": "",
+    "createdAt": "2025-09-25"
+  },
+  {
+    "id": "f4e8223d-5570-4312-9a57-517b7bdf3378",
+    "name": "jorge andrade ",
+    "email": "jandrade@cesmag.edu.co",
+    "password": "123456",
+    "program": "Ingeniería de Sistemas",
+    "role": "student",
+    "bio": "",
+    "avatar": "",
+    "createdAt": "2025-10-13"
+  }
+]

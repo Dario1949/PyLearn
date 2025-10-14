@@ -1,0 +1,346 @@
+[
+  {
+    "id": "hello_world",
+    "moduleId": "python-basics",
+    "title": "Hola Mundo",
+    "description": "Imprime 'Hola, mundo!' en la consola",
+    "category": "Básico",
+    "difficulty": "easy",
+    "points": 25,
+    "code": "# Escribe tu código aquí\n",
+    "testCases": [
+      {
+        "input": "",
+        "expectedOutput": "Hola, mundo!"
+      }
+    ]
+  },
+  {
+    "id": "simple_calculator",
+    "moduleId": "control-structures",
+    "title": "Calculadora Simple",
+    "description": "Crea una calculadora que sume dos números",
+    "category": "Operaciones",
+    "difficulty": "easy",
+    "points": 25,
+    "code": "# Crea una calculadora que sume dos números\na = 5\nb = 3\n# Tu código aquí\n",
+    "testCases": [
+      {
+        "input": "5, 3",
+        "expectedOutput": "8"
+      }
+    ]
+  },
+  {
+    "id": "sum_function",
+    "moduleId": "functions",
+    "title": "Función Suma",
+    "description": "Crea una función que sume dos números",
+    "category": "Funciones",
+    "difficulty": "medium",
+    "points": 50,
+    "code": "def sumar(a, b):\n    # Tu código aquí\n    pass\n\nprint(sumar(5, 3))",
+    "testCases": [
+      {
+        "input": "sumar(5, 3)",
+        "expectedOutput": "8"
+      }
+    ]
+  },
+  {
+    "id": "temperature_converter",
+    "moduleId": "functions",
+    "title": "Conversor de Temperatura",
+    "description": "Convierte Celsius a Fahrenheit",
+    "category": "Matemáticas",
+    "difficulty": "medium",
+    "points": 50,
+    "code": "def celsius_a_fahrenheit(celsius):\n    # Tu código aquí\n    pass\n\nprint(celsius_a_fahrenheit(25))",
+    "testCases": [
+      {
+        "input": "celsius_a_fahrenheit(25)",
+        "expectedOutput": "77.0"
+      }
+    ]
+  },
+  {
+    "id": "list_operations",
+    "moduleId": "data-structures",
+    "title": "Operaciones con Listas",
+    "description": "Encuentra el número mayor en una lista",
+    "category": "Listas",
+    "difficulty": "medium",
+    "points": 50,
+    "code": "numeros = [3, 7, 2, 9, 1, 5]\n# Encuentra el número mayor\n",
+    "testCases": [
+      {
+        "input": "numeros = [3, 7, 2, 9, 1, 5]",
+        "expectedOutput": "9"
+      }
+    ]
+  },
+  {
+    "id": "word_counter",
+    "moduleId": "data-structures",
+    "title": "Contador de Palabras",
+    "description": "Cuenta las palabras en una frase",
+    "category": "Strings",
+    "difficulty": "medium",
+    "points": 50,
+    "code": "frase = \"Python es un lenguaje genial\"\n# Cuenta las palabras\n",
+    "testCases": [
+      {
+        "input": "frase = \"Python es un lenguaje genial\"",
+        "expectedOutput": "5"
+      }
+    ]
+  },
+  {
+    "id": "prime_checker",
+    "moduleId": "algorithms",
+    "title": "Detector de Números Primos",
+    "description": "Verifica si un número es primo",
+    "category": "Algoritmos",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "def es_primo(numero):\n    # Tu código aquí\n    pass\n\nprint(es_primo(17))",
+    "testCases": [
+      {
+        "input": "es_primo(17)",
+        "expectedOutput": "True"
+      }
+    ]
+  },
+  {
+    "id": "fibonacci",
+    "moduleId": "algorithms",
+    "title": "Secuencia Fibonacci",
+    "description": "Genera los primeros 10 números de la secuencia Fibonacci",
+    "category": "Algoritmos",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "# Genera los primeros 10 números de Fibonacci\n",
+    "testCases": [
+      {
+        "input": "",
+        "expectedOutput": "0\n1\n1\n2\n3\n5\n8\n13\n21\n34"
+      }
+    ]
+  },
+  {
+    "id": "sorting_algorithm",
+    "moduleId": "algorithms",
+    "title": "Algoritmo de Ordenamiento",
+    "description": "Implementa el algoritmo de ordenamiento burbuja",
+    "category": "Algoritmos",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "def ordenamiento_burbuja(lista):\n    # Tu código aquí\n    pass\n\nprint(ordenamiento_burbuja([64, 34, 25, 12, 22, 11, 90]))",
+    "testCases": [
+      {
+        "input": "[64, 34, 25, 12, 22, 11, 90]",
+        "expectedOutput": "[11, 12, 22, 25, 34, 64, 90]"
+      }
+    ]
+  },
+  {
+    "id": "password_validator",
+    "moduleId": "advanced-topics",
+    "title": "Validador de Contraseñas",
+    "description": "Verifica si una contraseña es segura (mín 8 caracteres, mayúscula, número)",
+    "category": "Strings",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "def validar_password(password):\n    # Tu código aquí\n    pass\n\nprint(validar_password('MiPass123'))",
+    "testCases": [
+      {
+        "input": "validar_password('MiPass123')",
+        "expectedOutput": "True"
+      }
+    ]
+  },
+  {
+    "id": "palindrome",
+    "moduleId": "advanced-topics",
+    "title": "Detector de Palíndromos",
+    "description": "Verifica si una palabra es un palíndromo",
+    "category": "Strings",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "def es_palindromo(palabra):\n    # Tu código aquí\n    pass\n\nprint(es_palindromo(\"radar\"))",
+    "testCases": [
+      {
+        "input": "es_palindromo(\"radar\")",
+        "expectedOutput": "True"
+      }
+    ]
+  },
+  {
+    "id": "class_design",
+    "moduleId": "advanced-topics",
+    "title": "Diseño de Clases",
+    "description": "Crea una clase Persona con nombre y edad",
+    "category": "POO",
+    "difficulty": "hard",
+    "points": 100,
+    "code": "class Persona:\n    # Tu código aquí\n    pass\n\np = Persona(\"Juan\", 25)\nprint(p.nombre, p.edad)",
+    "testCases": [
+      {
+        "input": "Persona(\"Juan\", 25)",
+        "expectedOutput": "Juan 25"
+      }
+    ]
+  },
+  {
+    "id": "dic_ventas_agregacion_001",
+    "title": "Analista de Ventas: Agregación por Producto",
+    "description": "¡Hola, futuros innovadores de PyLearn CESMAG! ¿Están listos para un reto que combina la lógica empresarial con la elegancia de Python? Imagina que trabajas en el departamento de análisis de una gran tienda. Tu tarea es crucial: necesitas saber exactamente cuánto dinero ha generado cada producto para evaluar su rendimiento. Tu misión es desarrollar una función que, dada una lista de transacciones de ventas (cada una con su `producto` y `monto`), calcule el total acumulado de ventas para cada producto. ¡Es una fantástica oportunidad para afinar tus habilidades con diccionarios y lógica de agregación de datos! ¡Demuéstranos tu capacidad para transformar datos crudos en información valiosa!",
+    "category": "Diccionarios y Agregación de Datos",
+    "difficulty": "intermedio",
+    "points": 80,
+    "timeLimit": 1,
+    "code": "def calcular_ventas_por_producto(ventas: list[dict]) -> dict:\n    \"\"\"\n    Calcula el total de ventas para cada producto a partir de una lista de transacciones.\n\n    Args:\n        ventas (list[dict]): Una lista de diccionarios, donde cada diccionario\n                             representa una venta con las claves 'producto' (str)\n                             y 'monto' (float o int).\n\n    Returns:\n        dict: Un diccionario donde las claves son los nombres de los productos (str)\n              y los valores son el total de ventas acumulado para ese producto (float).\n    \"\"\"\n    # ¡Tu código va aquí! ¡Mucha suerte!\n    pass",
+    "testCases": [
+      {
+        "input": "[{\"producto\": \"Camisa\", \"monto\": 25.50}, {\"producto\": \"Pantalón\", \"monto\": 40.00}, {\"producto\": \"Camisa\", \"monto\": 30.00}, {\"producto\": \"Zapatos\", \"monto\": 75.00}]",
+        "expectedOutput": "{\"Camisa\": 55.5, \"Pantalón\": 40.0, \"Zapatos\": 75.0}"
+      },
+      {
+        "input": "[]",
+        "expectedOutput": "{}"
+      },
+      {
+        "input": "[{\"producto\": \"Gorra\", \"monto\": 10.0}, {\"producto\": \"Gorra\", \"monto\": 5.0}, {\"producto\": \"Bufanda\", \"monto\": 20.0}]",
+        "expectedOutput": "{\"Gorra\": 15.0, \"Bufanda\": 20.0}"
+      },
+      {
+        "input": "[{\"producto\": \"Libro\", \"monto\": 15.99}]",
+        "expectedOutput": "{\"Libro\": 15.99}"
+      },
+      {
+        "input": "[{\"producto\": \"Teclado\", \"monto\": 60.0}, {\"producto\": \"Ratón\", \"monto\": 25.0}, {\"producto\": \"Teclado\", \"monto\": 70.0}, {\"producto\": \"Ratón\", \"monto\": 30.0}, {\"producto\": \"Monitor\", \"monto\": 200.0}]",
+        "expectedOutput": "{\"Teclado\": 130.0, \"Ratón\": 55.0, \"Monitor\": 200.0}"
+      }
+    ]
+  },
+  {
+    "id": "list_unique_sum_001",
+    "title": "La Suma Secreta de los Números Únicos",
+    "description": "¡Hola, futuro genio de Python! ¿Estás listo para un desafío que pondrá a prueba tu habilidad con las listas? En este reto, recibirás una lista de números enteros, algunos repetidos. Tu misión es encontrar todos los números únicos, ¡deshaciéndote de los duplicados como un campeón! Luego, como toque final, deberás calcular la suma total de esos números únicos. ¡Demuéstranos tu lógica y eficiencia y haz que tu código brille!",
+    "category": "Listas y Conjuntos",
+    "difficulty": "intermedio",
+    "points": 75,
+    "timeLimit": 2,
+    "code": "def suma_numeros_unicos(numeros):\n    # Tu código va aquí\n    # Hint: Los conjuntos (sets) pueden ser tus aliados para encontrar números únicos.\n    pass",
+    "testCases": [
+      {
+        "input": "[1, 2, 2, 3, 4, 4, 5, 1]",
+        "expectedOutput": "15"
+      },
+      {
+        "input": "[10, 20, 10, 30, 20, 40]",
+        "expectedOutput": "100"
+      },
+      {
+        "input": "[7, 7, 7, 7]",
+        "expectedOutput": "7"
+      },
+      {
+        "input": "[]",
+        "expectedOutput": "0"
+      }
+    ]
+  },
+  {
+    "id": "PYL_LIST_STR_003",
+    "title": "¡Organizemos los Nombres!",
+    "description": "¡Hola, futuros magos de Python! ¿Listos para un desafío que pondrá a prueba tu lógica y tus habilidades con las cadenas de texto y las listas? Imagina que tienes una larga lista de nombres de estudiantes, pero están todos mezclados, ¡un verdadero caos! Tu misión es tomar esa cadena de nombres, dividirlos, ordenarlos alfabéticamente y luego unirlos de nuevo en una cadena perfectamente organizada. ¡Demuestra tu maestría en Python y haz que el orden reine! ¡Vamos, tú puedes con esto!",
+    "category": "Listas y Cadenas de Texto",
+    "difficulty": "intermedio",
+    "points": 120,
+    "timeLimit": 2,
+    "code": "def ordenar_nombres(nombres_str: str) -> str:\n    # Tu código va aquí\n    # Ej: 'Ana,Carlos,Beatriz' -> 'Ana,Beatriz,Carlos'\n    if not nombres_str:\n        return \"\"\n    \n    nombres_lista = nombres_str.split(',')\n    nombres_lista.sort()\n    return ','.join(nombres_lista)",
+    "testCases": [
+      {
+        "input": "Ana,Carlos,Beatriz,Daniela",
+        "expectedOutput": "Ana,Beatriz,Carlos,Daniela"
+      },
+      {
+        "input": "Zoe,Maria,Juan",
+        "expectedOutput": "Juan,Maria,Zoe"
+      },
+      {
+        "input": "Elias",
+        "expectedOutput": "Elias"
+      },
+      {
+        "input": "",
+        "expectedOutput": ""
+      },
+      {
+        "input": "sofia,ana,pedro,luisa,juan",
+        "expectedOutput": "ana,juan,luisa,pedro,sofia"
+      },
+      {
+        "input": "david,carlos,beatriz,andres",
+        "expectedOutput": "andres,beatriz,carlos,david"
+      }
+    ]
+  },
+  {
+    "id": "PYLEARN-C-STR-003",
+    "title": "El Palíndromo Versátil",
+    "description": "¡Hola, futuros genios de PyLearn CESMAG! ¿Listos para un desafío que pondrá a prueba su destreza con las cadenas de texto? Un palíndromo es una palabra o frase que se lee igual de izquierda a derecha que de derecha a izquierda. Pero en este reto, vamos a añadirle un toque de flexibilidad.\n\nTu misión es crear una función que determine si una cadena dada es un palíndromo, pero con las siguientes reglas especiales:\n\n1.  **Ignorar mayúsculas y minúsculas**: 'Madam' debería considerarse igual que 'madam'.\n2.  **Ignorar caracteres no alfanuméricos**: Espacios, signos de puntuación (como '!', '?', ',', '.', etc.) y números no deben influir en la verificación. Solo nos interesan las letras.\n\n¡Anímate! Este reto es una excelente oportunidad para practicar la manipulación de cadenas y afinar tu lógica. ¡Demuéstranos tu creatividad para resolverlo!",
+    "category": "Cadenas de Texto",
+    "difficulty": "intermedio",
+    "points": 150,
+    "timeLimit": 2,
+    "code": "import re\n\ndef es_palindromo_versatil(texto: str) -> bool:\n    # Tu código comienza aquí\n    pass\n    # Tu código termina aquí",
+    "testCases": [
+      {
+        "input": "reconocer",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "Anita lava la tina",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "La ruta nos aportó otro paso natural.",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "¡Somos o no somos! ¿Será un palíndromo 2023?",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "Python es genial",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "A man, a plan, a canal: Panama",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "No lemon, no melon",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "Madam",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "Hello",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "a",
+        "expectedOutput": "True"
+      }
+    ]
+  }
+]

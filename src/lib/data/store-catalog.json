@@ -1,0 +1,245 @@
+[
+  {
+    "id": "profile_avatar",
+    "name": "Desbloquear avatar",
+    "cost": 20,
+    "description": "Permite subir o cambiar tu foto de perfil.",
+    "category": "perfil",
+    "icon": "📸"
+  },
+  {
+    "id": "profile_info",
+    "name": "Editar información",
+    "cost": 40,
+    "description": "Permite cambiar tu nombre y biografía.",
+    "category": "perfil",
+    "icon": "✏️"
+  },
+  {
+    "id": "badge_python",
+    "name": "Insignia Python",
+    "cost": 30,
+    "description": "Obtén una insignia especial por tu progreso en Python.",
+    "category": "insignias",
+    "icon": "🐍"
+  },
+  {
+    "id": "badge_challenge_master",
+    "name": "Insignia Maestro de Retos",
+    "cost": 50,
+    "description": "Demuestra tu habilidad completando retos y obtén esta insignia.",
+    "category": "insignias",
+    "icon": "⚔️"
+  },
+  {
+    "id": "color_theme",
+    "name": "Cambiar color de interfaz",
+    "cost": 25,
+    "description": "Desbloquea la opción de personalizar el color de tu perfil.",
+    "category": "colores",
+    "icon": "🎨"
+  },
+  {
+    "id": "color_selector",
+    "name": "Selector de color",
+    "cost": 80,
+    "description": "Elige el color que más te guste para tu perfil.",
+    "category": "colores",
+    "icon": "🌈"
+  },
+  {
+    "id": "badge_bronze",
+    "name": "Insignia Bronce",
+    "cost": 50,
+    "description": "Insignia de nivel básico para mostrar tus primeros logros.",
+    "category": "insignias",
+    "icon": "🥉"
+  },
+  {
+    "id": "badge_silver",
+    "name": "Insignia Plata",
+    "cost": 100,
+    "description": "Insignia de nivel intermedio para usuarios dedicados.",
+    "category": "insignias",
+    "icon": "🥈"
+  },
+  {
+    "id": "badge_gold",
+    "name": "Insignia Oro",
+    "cost": 200,
+    "description": "Insignia de nivel avanzado para los mejores estudiantes.",
+    "category": "insignias",
+    "icon": "🥇"
+  },
+  {
+    "id": "badge_platinum",
+    "name": "Insignia Diamante",
+    "cost": 500,
+    "description": "Insignia de élite para los maestros de Python.",
+    "category": "insignias",
+    "icon": "💎"
+  },
+  {
+    "id": "background_selector",
+    "name": "Selector de Fondo",
+    "cost": 120,
+    "description": "Personaliza el color de fondo de la aplicación.",
+    "category": "colores",
+    "icon": "🖼️"
+  },
+  {
+    "id": "card_color_selector",
+    "name": "Selector de Color de Tarjetas",
+    "cost": 90,
+    "description": "Personaliza el color de los rectángulos y tarjetas de la aplicación.",
+    "category": "colores",
+    "icon": "🃏"
+  },
+  {
+    "id": "first_steps",
+    "name": "Primeros Pasos",
+    "cost": 25,
+    "description": "Insignia de inicio para nuevos estudiantes.",
+    "category": "insignias",
+    "icon": "🌱"
+  },
+  {
+    "id": "explorer",
+    "name": "Explorador",
+    "cost": 40,
+    "description": "Insignia para estudiantes curiosos que exploran diferentes módulos.",
+    "category": "insignias",
+    "icon": "🗺️"
+  },
+  {
+    "id": "problem_solver",
+    "name": "Solucionador",
+    "cost": 60,
+    "description": "Insignia para quienes resuelven problemas complejos.",
+    "category": "insignias",
+    "icon": "🧩"
+  },
+
+  {
+    "id": "code_ninja",
+    "name": "Ninja del Código",
+    "cost": 150,
+    "description": "Insignia élite para programadores excepcionales.",
+    "category": "insignias",
+    "icon": "🥷"
+  },
+  {
+    "id": "python_master",
+    "name": "Maestro Python",
+    "cost": 300,
+    "description": "Insignia legendaria para expertos en Python.",
+    "category": "insignias",
+    "icon": "👑"
+  },
+  {
+    "id": "badge_cesmag",
+    "name": "Insignia CESMAG",
+    "cost": 250,
+    "description": "Insignia especial de la institución CESMAG.",
+    "category": "insignias",
+    "icon": "🏛️"
+  },
+  {
+    "id": "text_color_selector",
+    "name": "Selector de Color de Texto",
+    "cost": 70,
+    "description": "Personaliza el color de la fuente de texto de la aplicación.",
+    "category": "colores",
+    "icon": "🔤"
+  },
+  {
+    "id": "theme_ocean",
+    "name": "Tema Océano",
+    "cost": 45,
+    "description": "Combinación azul oceánica: interfaz azul, fondo azul marino y tarjetas azul oscuro.",
+    "category": "colores",
+    "icon": "🌊",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#3b82f6",
+      "background": "#0c4a6e",
+      "card": "#1e3a8a",
+      "text": "#ffffff"
+    }
+  },
+  {
+    "id": "theme_forest",
+    "name": "Tema Bosque",
+    "cost": 45,
+    "description": "Combinación verde natural: interfaz verde, fondo verde oscuro y tarjetas esmeralda.",
+    "category": "colores",
+    "icon": "🌲",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#10b981",
+      "background": "#064e3b",
+      "card": "#166534",
+      "text": "#ffffff"
+    }
+  },
+  {
+    "id": "theme_sunset",
+    "name": "Tema Atardecer",
+    "cost": 45,
+    "description": "Combinación cálida: interfaz naranja, fondo marrón oscuro y tarjetas coral.",
+    "category": "colores",
+    "icon": "🌅",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#f97316",
+      "background": "#451a03",
+      "card": "#9a3412",
+      "text": "#ffffff"
+    }
+  },
+  {
+    "id": "theme_purple",
+    "name": "Tema Púrpura",
+    "cost": 45,
+    "description": "Combinación elegante: interfaz púrpura, fondo violeta profundo y tarjetas púrpura oscuro.",
+    "category": "colores",
+    "icon": "💜",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#8b5cf6",
+      "background": "#4c1d95",
+      "card": "#6b21a8",
+      "text": "#ffffff"
+    }
+  },
+  {
+    "id": "theme_dark",
+    "name": "Tema Oscuro",
+    "cost": 35,
+    "description": "Combinación minimalista: interfaz gris, fondo negro y tarjetas gris oscuro.",
+    "category": "colores",
+    "icon": "🖤",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#6b7280",
+      "background": "#000000",
+      "card": "#1f2937",
+      "text": "#ffffff"
+    }
+  },
+  {
+    "id": "theme_rose",
+    "name": "Tema Rosa",
+    "cost": 45,
+    "description": "Combinación romántica: interfaz rosa, fondo rosa oscuro y tarjetas fucsia.",
+    "category": "colores",
+    "icon": "🌸",
+    "type": "theme_preset",
+    "colors": {
+      "theme": "#ec4899",
+      "background": "#831843",
+      "card": "#be185d",
+      "text": "#ffffff"
+    }
+  }
+]

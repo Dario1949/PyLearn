@@ -1,0 +1,327 @@
+[
+  {
+    "userId": "2353a564-07ec-49bb-8a18-0f7fdd0c9826",
+    "unlocked": [
+      "profile_avatar",
+      "profile_info",
+      "bg_white",
+      "bg_red",
+      "badge_python",
+      "color_selector",
+      "color_theme",
+      "badge_bronze",
+      "background_selector",
+      "card_color_selector",
+      "explorer"
+    ],
+    "history": [
+      {
+        "itemId": "profile_avatar",
+        "cost": 20,
+        "ts": "2025-10-05T04:21:55.787Z"
+      },
+      {
+        "itemId": "profile_info",
+        "cost": 40,
+        "ts": "2025-10-05T04:30:15.785Z"
+      },
+      {
+        "itemId": "bg_white",
+        "cost": 15,
+        "ts": "2025-10-06T04:13:37.393Z"
+      },
+      {
+        "itemId": "bg_red",
+        "cost": 15,
+        "ts": "2025-10-06T04:13:39.791Z"
+      },
+      {
+        "itemId": "badge_python",
+        "cost": 30,
+        "ts": "2025-10-10T00:03:43.639Z"
+      },
+      {
+        "itemId": "color_selector",
+        "cost": 10,
+        "ts": "2025-10-10T00:03:52.273Z"
+      },
+      {
+        "itemId": "color_theme",
+        "cost": 25,
+        "ts": "2025-10-10T00:04:07.917Z"
+      },
+      {
+        "itemId": "badge_bronze",
+        "cost": 50,
+        "ts": "2025-10-10T02:33:40.871Z"
+      },
+      {
+        "itemId": "background_selector",
+        "cost": 50,
+        "ts": "2025-10-10T05:00:12.023Z"
+      },
+      {
+        "itemId": "card_color_selector",
+        "cost": 35,
+        "ts": "2025-10-10T05:00:14.401Z"
+      },
+      {
+        "itemId": "explorer",
+        "cost": 40,
+        "ts": "2025-10-10T05:24:18.240Z"
+      }
+    ]
+  },
+  {
+    "userId": "c9457142-1ad4-4a98-a8ac-ffbbb71478ca",
+    "unlocked": [
+      "profile_avatar",
+      "theme_sunset",
+      "theme_rose",
+      "badge_platinum",
+      "profile_info",
+      "badge_python",
+      "badge_bronze",
+      "badge_silver",
+      "badge_challenge_master",
+      "first_steps",
+      "explorer",
+      "problem_solver",
+      "badges_pack",
+      "python_master",
+      "theme_forest"
+    ],
+    "history": [
+      {
+        "itemId": "profile_avatar",
+        "cost": 20,
+        "ts": "2025-10-06T04:07:48.329Z"
+      },
+      {
+        "itemId": "theme_sunset",
+        "cost": 45,
+        "ts": "2025-10-10T18:28:36.804Z"
+      },
+      {
+        "itemId": "theme_rose",
+        "cost": 45,
+        "ts": "2025-10-10T18:28:45.328Z"
+      },
+      {
+        "itemId": "badge_platinum",
+        "cost": 500,
+        "ts": "2025-10-10T18:29:03.246Z"
+      },
+      {
+        "itemId": "profile_info",
+        "cost": 40,
+        "ts": "2025-10-10T18:29:31.367Z"
+      },
+      {
+        "itemId": "badge_python",
+        "cost": 30,
+        "ts": "2025-10-10T18:29:33.476Z"
+      },
+      {
+        "itemId": "badge_bronze",
+        "cost": 50,
+        "ts": "2025-10-10T18:29:34.673Z"
+      },
+      {
+        "itemId": "badge_silver",
+        "cost": 100,
+        "ts": "2025-10-10T18:29:35.824Z"
+      },
+      {
+        "itemId": "badge_challenge_master",
+        "cost": 50,
+        "ts": "2025-10-10T18:29:36.857Z"
+      },
+      {
+        "itemId": "badges_pack",
+        "cost": 150,
+        "ts": "2025-10-10T18:31:45.596Z"
+      },
+      {
+        "itemId": "python_master",
+        "cost": 300,
+        "ts": "2025-10-10T18:39:11.602Z"
+      },
+      {
+        "itemId": "theme_forest",
+        "cost": 45,
+        "ts": "2025-10-10T18:43:51.877Z"
+      }
+    ]
+  },
+  {
+    "userId": "13272d4e-5e5f-4053-802b-71298b9a554b",
+    "unlocked": [
+      "profile_avatar",
+      "profile_info",
+      "color_theme",
+      "color_selector",
+      "badge_challenge_master",
+      "background_selector",
+      "card_color_selector",
+      "badge_bronze",
+      "explorer",
+      "first_steps",
+      "badge_python",
+      "text_color_selector",
+      "problem_solver",
+      "theme_dark",
+      "theme_ocean",
+      "theme_purple",
+      "theme_rose",
+      "avatar_novice",
+      "theme_sunset",
+      "streak_master"
+    ],
+    "history": [
+      {
+        "itemId": "profile_avatar",
+        "cost": 20,
+        "ts": "2025-10-09T21:10:50.130Z"
+      },
+      {
+        "itemId": "profile_info",
+        "cost": 40,
+        "ts": "2025-10-09T21:13:13.619Z"
+      },
+      {
+        "itemId": "color_theme",
+        "cost": 25,
+        "ts": "2025-10-10T02:43:55.844Z"
+      },
+      {
+        "itemId": "color_selector",
+        "cost": 10,
+        "ts": "2025-10-10T02:44:01.870Z"
+      },
+      {
+        "itemId": "badge_challenge_master",
+        "cost": 50,
+        "ts": "2025-10-10T02:58:14.475Z"
+      },
+      {
+        "itemId": "background_selector",
+        "cost": 50,
+        "ts": "2025-10-10T04:02:27.250Z"
+      },
+      {
+        "itemId": "card_color_selector",
+        "cost": 35,
+        "ts": "2025-10-10T04:08:55.584Z"
+      },
+      {
+        "itemId": "badge_bronze",
+        "cost": 50,
+        "ts": "2025-10-10T04:22:31.297Z"
+      },
+      {
+        "itemId": "explorer",
+        "cost": 40,
+        "ts": "2025-10-10T04:36:10.860Z"
+      },
+      {
+        "itemId": "first_steps",
+        "cost": 25,
+        "ts": "2025-10-10T05:24:54.248Z"
+      },
+      {
+        "itemId": "badge_python",
+        "cost": 30,
+        "ts": "2025-10-10T05:25:06.592Z"
+      },
+      {
+        "itemId": "text_color_selector",
+        "cost": 30,
+        "ts": "2025-10-10T05:48:07.311Z"
+      },
+      {
+        "itemId": "problem_solver",
+        "cost": 60,
+        "ts": "2025-10-10T06:03:25.870Z"
+      },
+      {
+        "itemId": "theme_dark",
+        "cost": 35,
+        "ts": "2025-10-11T04:34:46.056Z"
+      },
+      {
+        "itemId": "theme_ocean",
+        "cost": 45,
+        "ts": "2025-10-13T18:48:55.846Z"
+      },
+      {
+        "itemId": "theme_purple",
+        "cost": 45,
+        "ts": "2025-10-13T18:55:54.611Z"
+      },
+      {
+        "itemId": "theme_rose",
+        "cost": 45,
+        "ts": "2025-10-13T18:59:41.310Z"
+      },
+      {
+        "itemId": "avatar_novice",
+        "cost": 0,
+        "ts": "2025-10-13T21:02:43.552Z"
+      },
+      {
+        "itemId": "theme_sunset",
+        "cost": 45,
+        "ts": "2025-10-13T21:07:31.942Z"
+      },
+      {
+        "itemId": "streak_master",
+        "cost": 75,
+        "ts": "2025-10-13T21:07:35.628Z"
+      }
+    ]
+  },
+  {
+    "userId": "6ea19c7c-1b6f-4471-ac99-4bdfcdd1cd4f",
+    "unlocked": [
+      "profile_info",
+      "profile_avatar",
+      "badge_platinum",
+      "first_steps",
+      "explorer",
+      "problem_solver",
+      "badge_bronze",
+      "badges_pack"
+    ],
+    "history": [
+      {
+        "itemId": "profile_info",
+        "cost": 40,
+        "ts": "2025-10-11T00:32:59.367Z"
+      },
+      {
+        "itemId": "profile_avatar",
+        "cost": 20,
+        "ts": "2025-10-11T00:33:06.743Z"
+      },
+      {
+        "itemId": "badge_platinum",
+        "cost": 500,
+        "ts": "2025-10-11T00:33:33.563Z"
+      },
+      {
+        "itemId": "badges_pack",
+        "cost": 150,
+        "ts": "2025-10-11T00:33:37.820Z"
+      }
+    ]
+  },
+  {
+    "id": "13272d4e-5e5f-4053-802b-71298b9a554b-avatar_novice-1760235363943",
+    "userId": "13272d4e-5e5f-4053-802b-71298b9a554b",
+    "itemId": "avatar_novice",
+    "cost": 0,
+    "purchaseDate": "2025-10-12T02:16:03.943Z",
+    "type": "achievement_unlock"
+  }
+]

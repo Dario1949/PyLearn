@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color palette to match modern orange-purple gradient design */
+  --background: #1a202c; /* Dark background */
+  --foreground: #ffffff; /* Texto blanco puro */
+  --card: #2d3748; /* Dark card background */
+  --card-foreground: #ffffff; /* Texto de tarjetas blanco */
+  --popover: #4a5568; /* Dark popover background */
+  --popover-foreground: #f8fafc; /* Texto de popover más claro */
+  --primary: #d97706; /* Primary orange color */
+  --primary-foreground: #ffffff; /* Text color on primary */
+  --secondary: #6b46c1; /* Purple accent color */
+  --secondary-foreground: #ffffff; /* Text color on secondary */
+  --muted: #e2e8f0; /* Texto muted más visible */
+  --muted-foreground: #ffffff; /* Texto sobre muted blanco */
+  --accent: #84cc16; /* Bright accent for highlights */
+  --accent-foreground: #1a202c; /* Dark text on accent */
+  --destructive: #e53e3e; /* Red for errors */
+  --destructive-foreground: #ffffff; /* White text on destructive */
+  --border: #4a5568; /* Border color */
+  --input: #2d3748; /* Input field background */
+  --ring: #d97706; /* Focus ring color */
+  --chart-1: #68d391; /* Chart color 1 */
+  --chart-2: #f6ad55; /* Chart color 2 */
+  --chart-3: #fc8181; /* Chart color 3 */
+  --chart-4: #90cdf4; /* Chart color 4 */
+  --chart-5: #d69e2e; /* Chart color 5 */
+  --radius: 0.5rem; /* Rounded corners */
+  --sidebar: #2d3748; /* Sidebar background */
+  --sidebar-foreground: #ffffff; /* Sidebar text */
+  --sidebar-primary: #4a5568; /* Primary sidebar element */
+  --sidebar-primary-foreground: #ffffff; /* Text on primary sidebar */
+  --sidebar-accent: #d97706; /* Orange accent on sidebar */
+  --sidebar-accent-foreground: #ffffff; /* Text on sidebar accent */
+  --sidebar-border: #4a5568; /* Sidebar borders */
+  --sidebar-ring: #d97706; /* Sidebar focus ring */
+}
+
+.dark {
+  /* Enhanced dark mode with better contrast and modern colors */
+  --background: #0f0f23; /* Deeper dark background */
+  --foreground: #f1f5f9; /* Light text */
+  --card: #1e1e3f; /* Dark purple card background */
+  --card-foreground: #f1f5f9; /* Light card text */
+  --popover: #2d2d5a; /* Dark purple popover */
+  --popover-foreground: #f1f5f9; /* Light popover text */
+  --primary: #f59e0b; /* Brighter orange for dark mode */
+  --primary-foreground: #0f0f23; /* Dark text on primary */
+  --secondary: #8b5cf6; /* Brighter purple for dark mode */
+  --secondary-foreground: #f1f5f9; /* Light text on secondary */
+  --muted: #64748b; /* Muted elements */
+  --muted-foreground: #f1f5f9; /* Light text on muted */
+  --accent: #10b981; /* Green accent */
+  --accent-foreground: #0f0f23; /* Dark text on accent */
+  --destructive: #ef4444; /* Red for errors */
+  --destructive-foreground: #f1f5f9; /* Light text on destructive */
+  --border: #374151; /* Subtle borders */
+  --input: #1e1e3f; /* Dark input background */
+  --ring: #f59e0b; /* Orange focus ring */
+  --sidebar: #1e1e3f; /* Dark sidebar */
+  --sidebar-foreground: #f1f5f9; /* Light sidebar text */
+  --sidebar-primary: #2d2d5a; /* Primary sidebar elements */
+  --sidebar-primary-foreground: #f1f5f9; /* Light text on primary sidebar */
+  --sidebar-accent: #f59e0b; /* Orange sidebar accent */
+  --sidebar-accent-foreground: #0f0f23; /* Dark text on sidebar accent */
+  --sidebar-border: #374151; /* Sidebar borders */
+  --sidebar-ring: #f59e0b; /* Orange sidebar focus ring */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-size: 18px; /* Tamaño base más grande */
+    line-height: 1.7; /* Mejor espaciado */
+    font-weight: 500; /* Texto más grueso */
+  }
+  
+  /* Texto más visible y destacado */
+  p, span, div, label, button {
+    color: #ffffff !important; /* Texto blanco puro */
+    font-weight: 500;
+  }
+  
+  /* Tamaños de texto significativamente más grandes */
+  .text-xs { font-size: 1rem; font-weight: 500; }
+  .text-sm { font-size: 1.1rem; font-weight: 500; }
+  .text-base { font-size: 1.25rem; font-weight: 500; }
+  .text-lg { font-size: 1.5rem; font-weight: 600; }
+  .text-xl { font-size: 1.75rem; font-weight: 600; }
+  .text-2xl { font-size: 2.1rem; font-weight: 700; }
+  .text-3xl { font-size: 2.5rem; font-weight: 700; }
+}
+
+/* Custom animations for gamification */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Added gradient utilities for modern design */
+@layer utilities {
+  .gradient-orange-purple {
+    background: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
+  }
+
+  .gradient-purple-blue {
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  }
+
+  .gradient-card {
+    background: linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.1) 0%,
+      rgba(139, 92, 246, 0.1) 100%
+    );
+  }
+
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+.toggle {
+  @apply relative inline-flex h-6 w-11 items-center rounded-full bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+}
+
+.toggle:checked {
+  @apply bg-primary;
+}
+
+.toggle::before {
+  content: "";
+  @apply inline-block h-4 w-4 transform rounded-full bg-background transition-transform;
+  transform: translateX(2px);
+}
+
+.toggle:checked::before {
+  transform: translateX(22px);
+}
+
+:global(.prose h2) {
+  @apply text-xl font-bold text-card-foreground mb-4 mt-6;
+  font-family: "Montserrat", sans-serif;
+}
+
+:global(.prose h3) {
+  @apply text-lg font-semibold text-card-foreground mb-3 mt-4;
+  font-family: "Montserrat", sans-serif;
+}
+
+:global(.prose p) {
+  @apply text-white leading-relaxed mb-4;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+
+:global(.prose ul) {
+  @apply text-white space-y-2 mb-4;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+
+:global(.prose li) {
+  @apply leading-relaxed text-white;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+
+:global(.prose pre) {
+  @apply bg-muted/10 rounded-lg p-4 overflow-x-auto mb-4;
+}
+
+:global(.prose code) {
+  @apply bg-muted/20 px-2 py-1 rounded text-sm font-mono;
+}
+
+:global(.prose pre code) {
+  @apply bg-transparent p-0;
+}
+
+:global(.prose blockquote) {
+  @apply border-l-4 border-primary pl-4 italic text-muted bg-primary/5 py-2 rounded-r;
+}
+
+:global(.prose strong) {
+  @apply font-semibold text-card-foreground;
+}
