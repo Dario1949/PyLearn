@@ -1,9 +1,6 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
+import { supabase } from '$lib/supabase.js';
 import { v4 as uuidv4 } from 'uuid';
-
-const answersPath = path.resolve('src/lib/data/forum-answers.json');
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request, fetch }) {
@@ -14,24 +11,19 @@ export async function POST({ request, fetch }) {
             return json({ success: false, error: 'Faltan datos requeridos.' }, { status: 400 });
         }
 
-        // Cargamos las respuestas existentes
-        let answers = [];
-        if (fs.existsSync(answersPath)) {
-            answers = JSON.parse(fs.readFileSync(answersPath, 'utf-8'));
-        }
-
         // Creamos el objeto de la nueva respuesta
         const newAnswer = {
             id: uuidv4(),
-            questionId,
-            authorId,
+            question_id: questionId,
+            author_id: authorId,
             content,
             timestamp: new Date().toISOString(),
-            isVerifiedCorrect: false
+            is_verified_correct: false
         };
 
-        answers.push(newAnswer);
-        fs.writeFileSync(answersPath, JSON.stringify(answers, null, 2));
+        // Guardamos en Supabase
+        const { error } = await supabase.from('forum_answers').insert(newAnswer);
+        if (error) throw error;
 
         // Otorgamos 5 puntos por responder
         await fetch('/api/progress/add-points', {

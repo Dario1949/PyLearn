@@ -176,7 +176,8 @@
       "theme_rose",
       "avatar_novice",
       "theme_sunset",
-      "streak_master"
+      "streak_master",
+      "badge_silver"
     ],
     "history": [
       {
@@ -278,6 +279,11 @@
         "itemId": "streak_master",
         "cost": 75,
         "ts": "2025-10-13T21:07:35.628Z"
+      },
+      {
+        "itemId": "badge_silver",
+        "cost": 100,
+        "ts": "2025-10-14T02:55:50.791Z"
       }
     ]
   },

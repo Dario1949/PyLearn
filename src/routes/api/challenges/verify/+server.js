@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '$lib/supabase.js';
 
 // 1. Leemos la clave de API de forma segura desde las variables de entorno
 import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
@@ -10,8 +9,7 @@ import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-// 2. Definimos la ruta al archivo de prompts
-const promptsPath = path.resolve('src/lib/data/prompts.json');
+
 
 // Función para limpiar la respuesta de la IA si viene envuelta en markdown
 function cleanJsonString(str) {
@@ -29,9 +27,9 @@ export async function POST({ request }) {
         }
 
         // --- ¡MEJORA CLAVE! ---
-        // 3. Leemos la plantilla del prompt desde el archivo JSON
-        const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf-8'));
-        let promptTemplate = prompts.verificarReto;
+        // 3. Leemos la plantilla del prompt desde Supabase
+        const { data: prompts } = await supabase.from('prompts').select('*').eq('key', 'verificarReto').single();
+        let promptTemplate = prompts.content;
 
         // 4. Reemplazamos las variables en la plantilla con los datos recibidos
         const prompt = promptTemplate

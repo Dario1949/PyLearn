@@ -1,9 +1,8 @@
 // src/routes/api/forum/verify-answer/+server.js
 import { json } from "@sveltejs/kit";
-import fs from "fs";
-import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PRIVATE_GOOGLE_API_KEY } from "$env/static/private";
+import { supabase } from '$lib/supabase.js';
 
 // --- IA ---
 if (!PRIVATE_GOOGLE_API_KEY) {
@@ -11,10 +10,6 @@ if (!PRIVATE_GOOGLE_API_KEY) {
 }
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-// --- Rutas de datos ---
-const answersPath = path.resolve("src/lib/data/forum-answers.json");
-const promptsPath = path.resolve("src/lib/data/prompts.json");
 
 // --- Template fallback robusto ---
 const DEFAULT_VERIFY_TEMPLATE = `
@@ -41,20 +36,13 @@ function cleanJsonString(str) {
   return match ? match[1].trim() : str.trim();
 }
 
-// Lee un template desde prompts.json si existe, sino devuelve null
-function loadVerifyTemplateFromFile() {
+// Lee un template desde Supabase si existe, sino devuelve null
+async function loadVerifyTemplateFromDB() {
   try {
-    if (!fs.existsSync(promptsPath)) return null;
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, "utf-8"));
-    // intenta distintas claves posibles
-    const candidate =
-      prompts?.verifyAnswer ??
-      prompts?.verifyChallenge ??
-      prompts?.forumVerify ??
-      null;
-    return typeof candidate === "string" ? candidate : null;
+    const { data } = await supabase.from('prompts').select('*').eq('key', 'verifyAnswer').single();
+    return data?.content || null;
   } catch (e) {
-    console.warn("[verify-answer] No se pudo leer prompts.json:", e?.message);
+    console.warn("[verify-answer] No se pudo leer prompts desde Supabase:", e?.message);
     return null;
   }
 }
@@ -103,8 +91,8 @@ export async function POST({ request, fetch, locals }) {
     const isStudent = locals.user?.role === "student";
     const isAuthor =
       locals.user?.id &&
-      question?.authorId &&
-      locals.user.id === question.authorId;
+      question?.author_id &&
+      locals.user.id === question.author_id;
     if (isStudent && !isAuthor) {
       return json(
         {
@@ -121,8 +109,8 @@ export async function POST({ request, fetch, locals }) {
     const aContent = String(answer?.content ?? "").trim();
 
     // Carga template (o fallback)
-    const fileTemplate = loadVerifyTemplateFromFile();
-    const template = fileTemplate || DEFAULT_VERIFY_TEMPLATE;
+    const dbTemplate = await loadVerifyTemplateFromDB();
+    const template = dbTemplate || DEFAULT_VERIFY_TEMPLATE;
 
     // Construye el prompt final (sin .replace sobre undefined)
     const prompt = fillTemplate(template, {
@@ -159,7 +147,7 @@ export async function POST({ request, fetch, locals }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: String(answer?.authorId || ""),
+            userId: String(answer?.author_id || ""),
             points: 15,
             reason: "FORUM_CORRECT_REPLY",
           }),
@@ -172,19 +160,13 @@ export async function POST({ request, fetch, locals }) {
       }
 
       try {
-        if (fs.existsSync(answersPath)) {
-          const answers = JSON.parse(fs.readFileSync(answersPath, "utf-8"));
-          const idx = Array.isArray(answers)
-            ? answers.findIndex((a) => a?.id === answer?.id)
-            : -1;
-          if (idx !== -1) {
-            answers[idx].isVerifiedCorrect = true;
-            fs.writeFileSync(answersPath, JSON.stringify(answers, null, 2));
-          }
-        }
+        await supabase
+          .from('forum_answers')
+          .update({ is_verified_correct: true })
+          .eq('id', answer?.id);
       } catch (e) {
         console.warn(
-          "[verify-answer] No se pudo actualizar forum-answers.json:",
+          "[verify-answer] No se pudo actualizar respuesta en Supabase:",
           e?.message
         );
       }

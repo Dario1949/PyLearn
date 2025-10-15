@@ -1,8 +1,5 @@
 // src/routes/api/progress/[userId]/+server.js
-import fs from 'fs';
-import path from 'path';
-
-const progressPath = path.resolve('src/lib/data/progress.json');
+import { supabase } from '$lib/supabase.js';
 
 /**
  * GET /api/progress/:userId
@@ -18,23 +15,26 @@ export async function GET({ params }) {
     });
   }
 
-  let list = [];
   try {
-    if (fs.existsSync(progressPath)) {
-      list = JSON.parse(fs.readFileSync(progressPath, 'utf-8'));
+    const { data: progress, error } = await supabase
+      .from('progress')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
     }
+
+    return new Response(JSON.stringify({ success: true, progress: progress ?? null }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (e) {
-    console.error('Error leyendo progress.json:', e);
-    return new Response(JSON.stringify({ success: false, error: 'No se pudo leer el progreso' }), {
+    console.error('Error obteniendo progreso:', e);
+    return new Response(JSON.stringify({ success: false, error: 'No se pudo obtener el progreso' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }
-
-  const row = Array.isArray(list) ? list.find(p => p.userId === userId) : null;
-
-  return new Response(JSON.stringify({ success: true, progress: row ?? null }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  });
 }

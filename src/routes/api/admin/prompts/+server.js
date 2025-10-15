@@ -1,8 +1,5 @@
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
-
-const promptsPath = path.resolve('src/lib/data/prompts.json');
+import { supabase } from '$lib/supabase.js';
 
 // --- GET: Devuelve todos los prompts actuales ---
 /** @type {import('./$types').RequestHandler} */
@@ -13,8 +10,13 @@ export async function GET({ locals }) {
     }
 
     try {
-        const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf-8'));
-        return json(prompts);
+        const { data: prompts, error } = await supabase
+            .from('prompts')
+            .select('*')
+            .single();
+
+        if (error) throw error;
+        return json(prompts.content || {});
     } catch (error) {
         return json({ error: 'No se pudieron cargar los prompts.' }, { status: 500 });
     }
@@ -30,8 +32,12 @@ export async function POST({ request, locals }) {
 
     try {
         const updatedPrompts = await request.json();
-        // Aquí podrías añadir validación para asegurar que el JSON tiene la estructura correcta
-        fs.writeFileSync(promptsPath, JSON.stringify(updatedPrompts, null, 2));
+        
+        const { error } = await supabase
+            .from('prompts')
+            .upsert({ id: 1, content: updatedPrompts });
+
+        if (error) throw error;
         return json({ success: true, message: 'Prompts actualizados con éxito.' });
     } catch (error) {
         return json({ error: 'No se pudieron guardar los prompts.' }, { status: 500 });

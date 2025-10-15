@@ -1,10 +1,6 @@
-import fs from 'fs';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { json } from '@sveltejs/kit';
-
-const usersPath = path.resolve('src/lib/data/users.json');
-const progressPath = path.resolve('src/lib/data/progress.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request, cookies }) {
@@ -15,48 +11,58 @@ export async function POST({ request, cookies }) {
 			return json({ success: false, error: 'Faltan campos requeridos' }, { status: 400 });
 		}
 
-		let users = fs.existsSync(usersPath) ? JSON.parse(fs.readFileSync(usersPath, 'utf-8')) : [];
-		let progress = fs.existsSync(progressPath) ? JSON.parse(fs.readFileSync(progressPath, 'utf-8')) : [];
-
-		if (users.some((u) => u.email === userData.email)) {
+		// Verificar si el email ya existe
+		const { data: existingUser } = await supabase.from('users').select('id').eq('email', userData.email).single();
+		if (existingUser) {
 			return json({ success: false, error: 'El correo ya está registrado' }, { status: 409 });
 		}
 
-		// Lógica del primer Admin: Si no hay usuarios, el primero en registrarse será 'admin'.
-		const role = users.length === 0 ? 'admin' : userData.role || 'student';
+		// Verificar si es el primer usuario (admin)
+		const { data: users } = await supabase.from('users').select('id');
+		const role = users?.length === 0 ? 'admin' : userData.role || 'student';
 		const newUserId = uuidv4();
 
 		const newUser = {
 			id: newUserId,
 			name: userData.name,
 			email: userData.email,
-			password: userData.password, // En producción, hashear la contraseña aquí.
+			password: userData.password,
 			program: userData.program || null,
 			role: role,
 			bio: '',
 			avatar: '',
-			createdAt: new Date().toLocaleDateString('en-CA') // formato YYYY-MM-DD
+			created_at: new Date().toISOString()
 		};
 
 		const newUserProgress = {
-			userId: newUserId,
+			user_id: newUserId,
 			points: 0,
 			level: 1,
 			progress: 0,
-			completedModules: [],
-			earnedBadges: [],
-			completedChallenges: [],
-			averageScore: 0,
+			completed_modules: [],
+			earned_badges: [],
+			completed_challenges: [],
+			average_score: 0,
 			streak: 0,
 			status: 'active',
-			lastActivity: new Date().toLocaleDateString('en-CA') // formato YYYY-MM-DD
+			last_activity: new Date().toISOString()
 		};
 
-		users.push(newUser);
-		progress.push(newUserProgress);
+		// Insertar usuario y progreso en Supabase
+		const { data: insertedUser, error: userError } = await supabase.from('users').insert(newUser).select();
+		if (userError) {
+			console.error('Error insertando usuario:', userError);
+			throw userError;
+		}
 
-		fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
-		fs.writeFileSync(progressPath, JSON.stringify(progress, null, 2));
+		const { data: insertedProgress, error: progressError } = await supabase.from('progress').insert(newUserProgress).select();
+		if (progressError) {
+			console.error('Error insertando progreso:', progressError);
+			throw progressError;
+		}
+
+		console.log('Usuario insertado exitosamente:', insertedUser);
+		console.log('Progreso insertado exitosamente:', insertedProgress);
 
 		// Establecemos la cookie de sesión para el nuevo usuario.
 		cookies.set('session_id', newUser.id, {

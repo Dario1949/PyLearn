@@ -1,17 +1,5 @@
 import { json } from "@sveltejs/kit";
-import fs from "fs";
-import path from "path";
-
-const catalogPath = path.resolve("src/lib/data/store-catalog.json");
-const purchasesPath = path.resolve("src/lib/data/purchases.json");
-const progressPath = path.resolve("src/lib/data/progress.json");
-
-function readJson(p) {
-  return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf-8")) : null;
-}
-function writeJson(p, data) {
-  fs.writeFileSync(p, JSON.stringify(data, null, 2), "utf-8");
-}
+import { supabase } from '$lib/supabase.js';
 
 export async function POST({ request, locals }) {
   try {
@@ -27,47 +15,57 @@ export async function POST({ request, locals }) {
     }
     const userId = locals.user.id;
 
-    const catalog = readJson(catalogPath) || [];
-    const item = Array.isArray(catalog)
-      ? catalog.find((i) => i.id === itemId)
-      : null;
-    if (!item) {
+    // Obtener item del catálogo
+    const { data: item, error: itemError } = await supabase
+      .from('store_catalog')
+      .select('*')
+      .eq('id', itemId)
+      .single();
+
+    if (itemError || !item) {
       return json(
         { success: false, error: "Artículo no encontrado" },
         { status: 404 }
       );
     }
 
-    const purchases = readJson(purchasesPath) || [];
-    const progress = readJson(progressPath) || [];
+    // Obtener progreso del usuario
+    const { data: userProgress, error: progressError } = await supabase
+      .from('progress')
+      .select('points, total_points_earned')
+      .eq('user_id', userId)
+      .single();
 
-    const pIndex = Array.isArray(purchases)
-      ? purchases.findIndex((p) => p.userId === userId)
-      : -1;
-    const progressIndex = Array.isArray(progress)
-      ? progress.findIndex((p) => p.userId === userId)
-      : -1;
-
-    if (progressIndex === -1) {
+    if (progressError) {
       return json(
         { success: false, error: "Progreso del usuario no encontrado" },
         { status: 404 }
       );
     }
 
-    const userPurchases =
-      pIndex !== -1 ? purchases[pIndex] : { userId, unlocked: [], history: [] };
-    if (userPurchases.unlocked.includes(itemId)) {
-      // Ya desbloqueado -> idempotente
+    // Verificar si ya está desbloqueado
+    const { data: existingPurchase } = await supabase
+      .from('purchases')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('item_id', itemId)
+      .single();
+
+    if (existingPurchase) {
+      const { data: unlocked } = await supabase
+        .from('purchases')
+        .select('item_id')
+        .eq('user_id', userId);
+      
       return json({
         success: true,
-        points: progress[progressIndex].points,
-        unlocked: userPurchases.unlocked,
+        points: userProgress.points,
+        unlocked: unlocked?.map(p => p.item_id) || [],
       });
     }
 
     const cost = Number(item.cost || 0);
-    const currentPoints = Number(progress[progressIndex].points || 0);
+    const currentPoints = Number(userProgress.points || 0);
     const isAdmin = locals.user.role === 'admin' || locals.user.role === 'teacher';
     
     // Verificar puntos solo si no es administrador
@@ -84,38 +82,59 @@ export async function POST({ request, locals }) {
       );
     }
 
-    // Descontar puntos solo si no es administrador
-    if (!isAdmin) {
-      progress[progressIndex].points = currentPoints - cost;
-      // Mantener el total de puntos ganados
-      if (!progress[progressIndex].totalPointsEarned) {
-        progress[progressIndex].totalPointsEarned = currentPoints;
-      }
-    }
-    
+    // Crear registro de compra
+    const purchaseRecord = {
+      user_id: userId,
+      item_id: itemId,
+      cost,
+      purchase_date: new Date().toISOString(),
+      type: 'purchase'
+    };
+
+    const { error: purchaseError } = await supabase
+      .from('purchases')
+      .insert(purchaseRecord);
+
+    if (purchaseError) throw purchaseError;
+
     // Manejar paquetes de insignias
     if (item.type === 'badge_pack' && Array.isArray(item.includes)) {
-      // Agregar todas las insignias del paquete
-      item.includes.forEach(badgeId => {
-        if (!userPurchases.unlocked.includes(badgeId)) {
-          userPurchases.unlocked.push(badgeId);
-        }
-      });
+      const badgePurchases = item.includes.map(badgeId => ({
+        user_id: userId,
+        item_id: badgeId,
+        cost: 0,
+        purchase_date: new Date().toISOString(),
+        type: 'badge_pack_item'
+      }));
+      
+      await supabase.from('purchases').insert(badgePurchases);
     }
-    
-    userPurchases.unlocked.push(itemId);
-    userPurchases.history.push({ itemId, cost, ts: new Date().toISOString() });
 
-    if (pIndex !== -1) purchases[pIndex] = userPurchases;
-    else purchases.push(userPurchases);
+    // Descontar puntos solo si no es administrador
+    let newPoints = currentPoints;
+    if (!isAdmin) {
+      newPoints = currentPoints - cost;
+      const { error: updateError } = await supabase
+        .from('progress')
+        .update({ 
+          points: newPoints,
+          total_points_earned: userProgress.total_points_earned || currentPoints
+        })
+        .eq('user_id', userId);
 
-    writeJson(progressPath, progress);
-    writeJson(purchasesPath, purchases);
+      if (updateError) throw updateError;
+    }
+
+    // Obtener todos los items desbloqueados
+    const { data: allUnlocked } = await supabase
+      .from('purchases')
+      .select('item_id')
+      .eq('user_id', userId);
 
     return json({
       success: true,
-      points: progress[progressIndex].points,
-      unlocked: userPurchases.unlocked,
+      points: newPoints,
+      unlocked: allUnlocked?.map(p => p.item_id) || [],
     });
   } catch (e) {
     console.error("store/purchase error:", e);

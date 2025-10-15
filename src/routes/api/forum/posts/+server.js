@@ -1,36 +1,30 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const questionsPath = path.resolve('src/lib/data/forum-questions.json');
-const answersPath = path.resolve('src/lib/data/forum-answers.json');
-const usersPath = path.resolve('src/lib/data/users.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
     try {
-        // Leemos los archivos de forma segura, devolviendo un array vacío si no existen
-        const questions = fs.existsSync(questionsPath) ? JSON.parse(fs.readFileSync(questionsPath, 'utf-8')) : [];
-        const answers = fs.existsSync(answersPath) ? JSON.parse(fs.readFileSync(answersPath, 'utf-8')) : [];
-        const users = fs.existsSync(usersPath) ? JSON.parse(fs.readFileSync(usersPath, 'utf-8')) : [];
+        const { data: questions } = await supabase.from('forum_questions').select('*');
+        const { data: answers } = await supabase.from('forum_answers').select('*');
+        const { data: users } = await supabase.from('users').select('id, name, avatar, role');
 
-        const usersMap = new Map(users.map(u => [u.id, { name: u.name, avatar: u.avatar, role: u.role }]));
+        const usersMap = new Map(users?.map(u => [u.id, { name: u.name, avatar: u.avatar, role: u.role }]) || []);
 
-        const posts = questions.map(q => {
+        const posts = questions?.map(q => {
             const postAnswers = answers
-                .filter(a => a.questionId === q.id)
+                ?.filter(a => a.question_id === q.id)
                 .map(a => ({
                     ...a,
-                    author: usersMap.get(a.authorId) || { name: 'Usuario Desconocido' }
-                }));
+                    author: usersMap.get(a.author_id) || { name: 'Usuario Desconocido' }
+                })) || [];
 
             return {
                 ...q,
-                author: usersMap.get(q.authorId) || { name: 'Usuario Desconocido' },
+                author: usersMap.get(q.author_id) || { name: 'Usuario Desconocido' },
                 answers: postAnswers,
-                replies: postAnswers.length // Añadimos el conteo de respuestas
+                replies: postAnswers.length
             };
-        });
+        }) || [];
 
         posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 

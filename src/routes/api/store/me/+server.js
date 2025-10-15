@@ -1,46 +1,43 @@
 import { json } from "@sveltejs/kit";
-import fs from "fs";
-import path from "path";
+import { supabase } from '$lib/supabase.js';
 
-const catalogPath = path.resolve("src/lib/data/store-catalog.json");
-const purchasesPath = path.resolve("src/lib/data/purchases.json");
-const progressPath = path.resolve("src/lib/data/progress.json");
-
-export async function GET({ locals }) {
+export async function GET({ locals, cookies }) {
   try {
-    if (!locals?.user?.id) {
-      return json({ success: false, error: "No autorizado" }, { status: 401 });
+    // Intentar obtener usuario de locals o de cookies
+    let userId = locals?.user?.id;
+    let userRole = locals?.user?.role;
+    
+    if (!userId) {
+      const sessionId = cookies.get('session_id');
+      if (!sessionId) {
+        return json({ success: false, error: "No autorizado" }, { status: 401 });
+      }
+      
+      // Obtener usuario de Supabase
+      const { data: user } = await supabase.from('users').select('id, role').eq('id', sessionId).single();
+      if (!user) {
+        return json({ success: false, error: "No autorizado" }, { status: 401 });
+      }
+      
+      userId = user.id;
+      userRole = user.role;
     }
-    const userId = locals.user.id;
 
-    const catalog = fs.existsSync(catalogPath)
-      ? JSON.parse(fs.readFileSync(catalogPath, "utf-8"))
-      : [];
-    const purchases = fs.existsSync(purchasesPath)
-      ? JSON.parse(fs.readFileSync(purchasesPath, "utf-8"))
-      : [];
-    const progress = fs.existsSync(progressPath)
-      ? JSON.parse(fs.readFileSync(progressPath, "utf-8"))
-      : [];
+    const { data: catalog } = await supabase.from('store_catalog').select('*');
+    const { data: userPurchases } = await supabase.from('purchases').select('item_id').eq('user_id', userId);
+    const { data: userProgress } = await supabase.from('progress').select('points').eq('user_id', userId).single();
 
-    const entry = Array.isArray(purchases)
-      ? purchases.find((p) => p.userId === userId)
-      : null;
-    const unlocked = entry?.unlocked ?? [];
-
-    const row = Array.isArray(progress)
-      ? progress.find((p) => p.userId === userId)
-      : null;
+    const unlocked = userPurchases?.map(p => p.item_id) || [];
     
     // Dar puntos infinitos a administradores
-    const isAdmin = locals.user.role === 'admin' || locals.user.role === 'teacher';
-    const points = isAdmin ? 999999 : (Number(row?.points ?? 0) || 0);
+    const isAdmin = userRole === 'admin' || userRole === 'teacher';
+    const points = isAdmin ? 999999 : (Number(userProgress?.points ?? 0) || 0);
 
     return json({
       success: true,
       points,
       unlocked,
-      catalog: Array.isArray(catalog) ? catalog : [],
+      catalog: catalog || [],
     });
   } catch (e) {
     return json(

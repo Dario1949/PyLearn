@@ -24,13 +24,38 @@
   $: formattedDescription = challenge.description?.split("\n").filter((p) => p.trim() !== "") || [];
 
   // 2. Limpia los casos de prueba para que se vean como "Entrada -> Salida"
-  $: parsedTestCases = challenge.testCases?.map((tc) => {
-    const inputMatch = tc.input?.match(/(\[\[.*\]\])/);
-    return {
-      input: inputMatch ? inputMatch[1] : tc.input,
-      expectedOutput: tc.expectedOutput,
-    };
-  }) || [];
+  $: parsedTestCases = (() => {
+    console.log('Challenge completo:', challenge);
+    
+    // Usar test_cases (snake_case) que es como viene de la base de datos
+    let testCases = challenge.test_cases || challenge.testCases;
+    console.log('testCases raw:', testCases);
+    console.log('Tipo de testCases:', typeof testCases);
+    
+    // Si testCases es un string, intentar parsearlo como JSON
+    if (typeof testCases === 'string') {
+      try {
+        testCases = JSON.parse(testCases);
+        console.log('testCases parseados:', testCases);
+      } catch (e) {
+        console.error('Error parseando testCases:', e);
+        return [];
+      }
+    }
+    
+    if (!Array.isArray(testCases)) {
+      console.log('testCases no es un array:', testCases);
+      return [];
+    }
+    
+    return testCases.map((tc) => {
+      const inputMatch = tc.input?.match(/(\[\[.*\]\])/);
+      return {
+        input: inputMatch ? inputMatch[1] : tc.input,
+        expectedOutput: tc.expectedOutput,
+      };
+    });
+  })();
 
   // --- Lógica del Componente ---
 

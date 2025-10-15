@@ -1,8 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const notificationsPath = path.resolve('src/lib/data/notifications.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function DELETE({ params }) {
@@ -13,14 +10,11 @@ export async function DELETE({ params }) {
       return json({ error: 'ID de notificación es requerido' }, { status: 400 });
     }
     
-    const notifications = JSON.parse(fs.readFileSync(notificationsPath, 'utf-8'));
-    const filteredNotifications = notifications.filter(n => n.id !== id);
+    const { error } = await supabase.from('notifications').delete().eq('id', id);
     
-    if (notifications.length === filteredNotifications.length) {
+    if (error) {
       return json({ error: 'Notificación no encontrada' }, { status: 404 });
     }
-    
-    fs.writeFileSync(notificationsPath, JSON.stringify(filteredNotifications, null, 2));
     
     return json({ success: true });
   } catch (error) {

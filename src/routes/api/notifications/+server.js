@@ -1,13 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const notificationsPath = path.resolve('src/lib/data/notifications.json');
-
-// Asegurar que el archivo existe
-if (!fs.existsSync(notificationsPath)) {
-  fs.writeFileSync(notificationsPath, '[]');
-}
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -18,20 +10,18 @@ export async function POST({ request }) {
       return json({ error: 'userId y message son requeridos' }, { status: 400 });
     }
     
-    const notifications = JSON.parse(fs.readFileSync(notificationsPath, 'utf-8'));
-    
     const newNotification = {
       id: Date.now().toString(),
-      userId,
+      user_id: userId,
       message,
       type: type || 'info',
-      from: from || 'Sistema',
+      from_user: from || 'Sistema',
       timestamp: new Date().toISOString(),
       read: false
     };
     
-    notifications.push(newNotification);
-    fs.writeFileSync(notificationsPath, JSON.stringify(notifications, null, 2));
+    const { error } = await supabase.from('notifications').insert(newNotification);
+    if (error) throw error;
     
     return json({ success: true, notification: newNotification });
   } catch (error) {
@@ -49,10 +39,15 @@ export async function GET({ url }) {
       return json({ error: 'userId es requerido' }, { status: 400 });
     }
     
-    const notifications = JSON.parse(fs.readFileSync(notificationsPath, 'utf-8'));
-    const userNotifications = notifications.filter(n => n.userId === userId);
+    const { data: notifications, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('timestamp', { ascending: false });
     
-    return json({ notifications: userNotifications });
+    if (error) throw error;
+    
+    return json({ notifications: notifications || [] });
   } catch (error) {
     console.error('Error al obtener notificaciones:', error);
     return json({ error: 'Error interno del servidor' }, { status: 500 });
@@ -62,21 +57,17 @@ export async function GET({ url }) {
 /** @type {import('./$types').RequestHandler} */
 export async function DELETE({ url }) {
   try {
-    const pathParts = url.pathname.split('/');
-    const notificationId = pathParts[pathParts.length - 1];
+    const notificationId = url.searchParams.get('id');
     
     if (!notificationId) {
       return json({ error: 'ID de notificación es requerido' }, { status: 400 });
     }
     
-    const notifications = JSON.parse(fs.readFileSync(notificationsPath, 'utf-8'));
-    const filteredNotifications = notifications.filter(n => n.id !== notificationId);
+    const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
     
-    if (notifications.length === filteredNotifications.length) {
+    if (error) {
       return json({ error: 'Notificación no encontrada' }, { status: 404 });
     }
-    
-    fs.writeFileSync(notificationsPath, JSON.stringify(filteredNotifications, null, 2));
     
     return json({ success: true });
   } catch (error) {

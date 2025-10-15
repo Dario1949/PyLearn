@@ -2,7 +2,7 @@
   import Button from "$lib/components/ui/Button.svelte";
 
   // Las props 'module' y 'user' vienen de la página principal /modules
-  let { module, user } = $props();
+  let { module, user, onComplete } = $props();
 
   const difficultyColors = {
     Principiante: "bg-green-600 text-white",

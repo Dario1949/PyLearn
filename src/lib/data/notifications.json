@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "1760410436089",
+    "userId": "13272d4e-5e5f-4053-802b-71298b9a554b",
+    "message": "hola alejo",
+    "type": "teacher_message",
+    "from": "Luis Alejandro Lopez Davila",
+    "timestamp": "2025-10-14T02:53:56.089Z",
+    "read": false
+  }
+]

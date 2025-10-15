@@ -52,9 +52,9 @@ class AuthStore {
           isAuthenticated: true
         }))
         
-        // Cargar tema y progreso del usuario inmediatamente
+        // Cargar progreso y tema del usuario inmediatamente
+        await this.loadUserProgress(data.user.id);
         this.loadUserTheme(data.user.id);
-        this.loadUserProgress(data.user.id);
         
         return { success: true }
       } else {
@@ -144,9 +144,9 @@ class AuthStore {
             isAuthenticated: true
           }))
           
-          // Cargar tema y progreso real del usuario
-          this.loadUserTheme(user.id);
+          // Cargar progreso y tema real del usuario
           this.loadUserProgress(user.id);
+          this.loadUserTheme(user.id);
         } catch (error) {
           this.clearLocalStorage()
         }
@@ -158,6 +158,7 @@ class AuthStore {
     try {
       const response = await fetch(`/api/progress/${userId}`);
       const data = await response.json();
+      
       if (data.success && data.progress) {
         const { update } = this.state;
         update((state) => {
@@ -165,8 +166,14 @@ class AuthStore {
             const updatedUser = {
               ...state.user,
               points: data.progress.points || 0,
-              completedModules: data.progress.completedModules || [],
-              completedChallenges: data.progress.completedChallenges || []
+              level: data.progress.level || 1,
+              completedModules: data.progress.completed_modules || [],
+              completedChallenges: data.progress.completed_challenges || [],
+              completedLessons: data.progress.completed_lessons || [],
+              earnedBadges: data.progress.earned_badges || [],
+              streak: data.progress.streak || 0,
+              averageScore: data.progress.average_score || 0,
+              totalPointsEarned: data.progress.total_points_earned || 0
             };
             
             // También actualizar localStorage
@@ -182,7 +189,9 @@ class AuthStore {
           return state;
         });
         
-        // El tema ya se cargó antes, no necesario duplicar
+        console.log('Progreso cargado exitosamente:', data.progress);
+      } else {
+        console.log('No se encontró progreso para el usuario o es nuevo');
       }
     } catch (error) {
       console.warn('No se pudo cargar el progreso del usuario:', error);

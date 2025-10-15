@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '$lib/supabase.js';
 
 // 1. Leemos la clave de API de forma segura desde las variables de entorno
 import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
@@ -10,9 +9,7 @@ import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-// 2. Definimos las rutas a nuestros archivos de "base de datos"
-const challengesPath = path.resolve('src/lib/data/challenges.json');
-const promptsPath = path.resolve('src/lib/data/prompts.json');
+
 
 // Función para limpiar la respuesta de la IA si viene envuelta en markdown
 function cleanJsonString(str) {
@@ -26,9 +23,9 @@ export async function POST({ request }) {
     const { topic = 'funciones básicas', difficulty = 'easy' } = await request.json();
 
     // --- ¡MEJORA CLAVE! ---
-    // 3. Leemos la plantilla del prompt desde el archivo JSON centralizado
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf-8'));
-    let promptTemplate = prompts.generarReto;
+    // 3. Leemos la plantilla del prompt desde Supabase
+    const { data: prompts } = await supabase.from('prompts').select('*').eq('key', 'generarReto').single();
+    let promptTemplate = prompts.content;
 
     // 4. Reemplazamos las variables en la plantilla con los valores recibidos
     const prompt = promptTemplate
@@ -40,21 +37,21 @@ export async function POST({ request }) {
     const responseText = result.response.text();
     const newChallenge = JSON.parse(cleanJsonString(responseText));
 
-    // 6. Guardamos el nuevo reto en nuestra base de datos de retos
-    let allChallenges = [];
-    if (fs.existsSync(challengesPath)) {
-      const fileContent = fs.readFileSync(challengesPath, 'utf-8');
-      // Verificamos que el archivo no esté vacío para evitar errores de parseo
-      if (fileContent) {
-        allChallenges = JSON.parse(fileContent);
-      }
-    }
+    // 6. Guardamos el nuevo reto en Supabase
+    const mappedChallenge = {
+      id: newChallenge.id,
+      module_id: newChallenge.moduleId,
+      title: newChallenge.title,
+      description: newChallenge.description,
+      category: newChallenge.category,
+      difficulty: newChallenge.difficulty,
+      points: newChallenge.points,
+      time_limit: newChallenge.timeLimit,
+      code: newChallenge.code,
+      test_cases: newChallenge.testCases
+    };
 
-    // Evitamos guardar duplicados si la IA genera el mismo ID
-    if (!allChallenges.some((c) => c.id === newChallenge.id)) {
-      allChallenges.push(newChallenge);
-      fs.writeFileSync(challengesPath, JSON.stringify(allChallenges, null, 2));
-    }
+    await supabase.from('challenges').upsert(mappedChallenge);
 
     return json({ success: true, challenge: newChallenge });
 

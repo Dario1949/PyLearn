@@ -1,17 +1,14 @@
 import { json } from "@sveltejs/kit";
-import fs from "fs";
-import path from "path";
-
-const catalogPath = path.resolve("src/lib/data/store-catalog.json");
+import { supabase } from '$lib/supabase.js';
 
 export async function GET() {
   try {
-    const catalog = fs.existsSync(catalogPath)
-      ? JSON.parse(fs.readFileSync(catalogPath, "utf-8"))
-      : [];
+    const { data: catalog, error } = await supabase.from('store_catalog').select('*');
+    if (error) throw error;
+    
     return json({
       success: true,
-      catalog: Array.isArray(catalog) ? catalog : [],
+      catalog: catalog || [],
     });
   } catch (e) {
     return json(

@@ -1,20 +1,13 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const challengesPath = path.resolve('src/lib/data/challenges.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
 	try {
-		if (!fs.existsSync(challengesPath)) {
-			return json({ challenges: [] });
-		}
+		const { data: challenges, error } = await supabase.from('challenges').select('*');
+		if (error) throw error;
 
-		const challengesData = fs.readFileSync(challengesPath, 'utf-8');
-		const allChallenges = JSON.parse(challengesData);
-
-		return json({ challenges: allChallenges });
+		return json({ challenges: challenges || [] });
 
 	} catch (error) {
 		console.error('Error al leer los retos:', error);

@@ -1,8 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const questionsPath = path.resolve('src/lib/data/forum-questions.json');
+import { supabase } from '$lib/supabase.js';
 
 export async function POST({ request, locals }) {
   try {
@@ -15,34 +12,40 @@ export async function POST({ request, locals }) {
       return json({ success: false, error: 'ID de pregunta requerido' }, { status: 400 });
     }
 
-    const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf-8'));
-    const questionIndex = questions.findIndex(q => q.id === questionId);
+    // Obtener la pregunta de Supabase
+    const { data: question, error: fetchError } = await supabase
+      .from('forum_questions')
+      .select('*')
+      .eq('id', questionId)
+      .single();
 
-    if (questionIndex === -1) {
+    if (fetchError || !question) {
       return json({ success: false, error: 'Pregunta no encontrada' }, { status: 404 });
     }
-
-    const question = questions[questionIndex];
     
     // Solo el autor o un admin/teacher puede cerrar la pregunta
-    if (question.authorId !== locals.user.id && 
+    if (question.author_id !== locals.user.id && 
         locals.user.role !== 'admin' && 
         locals.user.role !== 'teacher') {
       return json({ success: false, error: 'No tienes permisos para cerrar esta pregunta' }, { status: 403 });
     }
 
     // Alternar el estado cerrado
-    questions[questionIndex].closed = !questions[questionIndex].closed;
-    
-    // Si se cierra, marcar como resuelto. Si se reabre, desmarcar
-    questions[questionIndex].solved = questions[questionIndex].closed;
+    const newClosed = !question.closed;
+    const newSolved = newClosed;
 
-    fs.writeFileSync(questionsPath, JSON.stringify(questions, null, 2));
+    // Actualizar en Supabase
+    const { error: updateError } = await supabase
+      .from('forum_questions')
+      .update({ closed: newClosed, solved: newSolved })
+      .eq('id', questionId);
+
+    if (updateError) throw updateError;
 
     return json({ 
       success: true, 
-      closed: questions[questionIndex].closed,
-      solved: questions[questionIndex].solved
+      closed: newClosed,
+      solved: newSolved
     });
 
   } catch (error) {

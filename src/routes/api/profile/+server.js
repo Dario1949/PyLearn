@@ -1,17 +1,12 @@
 // src/routes/api/profile/+server.js
 import fs from "fs";
 import path from "path";
+import { supabase } from '$lib/supabase.js';
 
-const usersPath = path.resolve("src/lib/data/users.json");
 const uploadsDir = path.resolve("uploads/avatars");
-const purchasesPath = path.resolve("src/lib/data/purchases.json");
-const catalogPath = path.resolve("src/lib/data/store-catalog.json");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
-function readJson(p) {
-  return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf-8")) : null;
 }
 
 export async function PUT({ request, locals }) {
@@ -68,12 +63,14 @@ export async function PUT({ request, locals }) {
       );
     }
 
-    // Cargar usuarios
-    const users = readJson(usersPath) || [];
-    const idx = Array.isArray(users)
-      ? users.findIndex((u) => u.email === email)
-      : -1;
-    if (idx === -1) {
+    // Cargar usuario desde Supabase
+    const { data: currentUser, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (userError || !currentUser) {
       return new Response(
         JSON.stringify({ success: false, error: "Usuario no encontrado" }),
         {
@@ -82,8 +79,6 @@ export async function PUT({ request, locals }) {
         }
       );
     }
-
-    const currentUser = users[idx];
 
     // ---- ENFORCEMENT DE TIENDA ----
     // Determinar intención (cambio de avatar / info)
@@ -99,16 +94,17 @@ export async function PUT({ request, locals }) {
       (typeof updates.bio === "string" &&
         updates.bio.trim() !== (currentUser.bio || "").trim());
 
-    // Leer desbloqueos del usuario
-    const purchases = readJson(purchasesPath) || [];
-    const entry = Array.isArray(purchases)
-      ? purchases.find((p) => p.userId === locals.user.id)
-      : null;
-    const unlocked = entry?.unlocked ?? [];
+    // Leer desbloqueos del usuario desde Supabase
+    const { data: userPurchases } = await supabase
+      .from('purchases')
+      .select('item_id')
+      .eq('user_id', locals.user.id);
+    
+    const unlocked = userPurchases?.map(p => p.item_id) || [];
 
-    // Cargar catálogo (para obtener costos si falta)
-    const catalog = readJson(catalogPath) || [];
-    const getCost = (id) => Number(catalog.find((i) => i.id === id)?.cost ?? 0);
+    // Cargar catálogo desde Supabase
+    const { data: catalog } = await supabase.from('store_catalog').select('*');
+    const getCost = (id) => Number(catalog?.find((i) => i.id === id)?.cost ?? 0);
 
     if (intendsAvatar && !unlocked.includes("profile_avatar")) {
       return new Response(
@@ -175,11 +171,17 @@ export async function PUT({ request, locals }) {
       delete updates.avatar; // no sobreescribir con vacío
     }
 
-    // Guardar cambios
-    users[idx] = { ...currentUser, ...updates };
-    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), "utf-8");
+    // Guardar cambios en Supabase
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('email', email)
+      .select()
+      .single();
 
-    return new Response(JSON.stringify({ success: true, user: users[idx] }), {
+    if (updateError) throw updateError;
+
+    return new Response(JSON.stringify({ success: true, user: updatedUser }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

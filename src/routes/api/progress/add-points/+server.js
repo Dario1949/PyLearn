@@ -1,8 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const progressPath = path.resolve('src/lib/data/progress.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -13,22 +10,30 @@ export async function POST({ request }) {
             return json({ success: false, error: 'Faltan datos (userId, points).' }, { status: 400 });
         }
 
-        let allProgress = JSON.parse(fs.readFileSync(progressPath, 'utf-8'));
-        const progressIndex = allProgress.findIndex(p => p.userId === userId);
+        // Obtener progreso actual
+        const { data: currentProgress, error: fetchError } = await supabase
+            .from('progress')
+            .select('points')
+            .eq('user_id', userId)
+            .single();
 
-        if (progressIndex === -1) {
+        if (fetchError) {
             return json({ success: false, error: 'Usuario no encontrado.' }, { status: 404 });
         }
 
-        // Añadimos los puntos al total del usuario
-        allProgress[progressIndex].points += points;
+        const newTotalPoints = currentProgress.points + points;
 
-        // (Opcional) Aquí podrías añadir lógica para registrar el historial de puntos ganados
+        // Actualizar puntos
+        const { error: updateError } = await supabase
+            .from('progress')
+            .update({ points: newTotalPoints })
+            .eq('user_id', userId);
+
+        if (updateError) throw updateError;
+
         console.log(`Usuario ${userId} ganó ${points} puntos por: ${reason || 'Actividad'}`);
 
-        fs.writeFileSync(progressPath, JSON.stringify(allProgress, null, 2));
-
-        return json({ success: true, newTotalPoints: allProgress[progressIndex].points });
+        return json({ success: true, newTotalPoints });
 
     } catch (error) {
         console.error('Error al añadir puntos:', error);

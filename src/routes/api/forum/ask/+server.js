@@ -1,9 +1,6 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
+import { supabase } from '$lib/supabase.js';
 import { v4 as uuidv4 } from 'uuid';
-
-const questionsPath = path.resolve('src/lib/data/forum-questions.json');
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request, fetch }) {
@@ -19,16 +16,10 @@ export async function POST({ request, fetch }) {
 			return json({ success: false, error: 'El título es demasiado corto.' }, { status: 400 });
 		}
 
-		// Cargamos las preguntas existentes
-		let questions = [];
-		if (fs.existsSync(questionsPath)) {
-			questions = JSON.parse(fs.readFileSync(questionsPath, 'utf-8'));
-		}
-
 		// Creamos el objeto de la nueva pregunta
 		const newQuestion = {
 			id: uuidv4(),
-			authorId,
+			author_id: authorId,
 			title,
 			content,
 			category,
@@ -39,8 +30,24 @@ export async function POST({ request, fetch }) {
 			tags: [] // Puedes añadir lógica para extraer tags del contenido
 		};
 
-		questions.push(newQuestion);
-		fs.writeFileSync(questionsPath, JSON.stringify(questions, null, 2));
+		// Guardamos en Supabase
+		const { error } = await supabase.from('forum_questions').insert(newQuestion);
+		if (error) throw error;
+
+		// Obtener información del autor
+		const { data: author } = await supabase
+			.from('users')
+			.select('id, name, avatar, role')
+			.eq('id', authorId)
+			.single();
+
+		// Crear la pregunta con la estructura completa
+		const questionWithAuthor = {
+			...newQuestion,
+			author: author || { name: 'Usuario Desconocido' },
+			answers: [],
+			replies: 0
+		};
 
 		// Otorgamos 5 puntos por preguntar
 		await fetch('/api/progress/add-points', {
@@ -49,7 +56,7 @@ export async function POST({ request, fetch }) {
 			body: JSON.stringify({ userId: authorId, points: 5, reason: 'FORUM_QUESTION' })
 		});
 
-		return json({ success: true, question: newQuestion }, { status: 201 });
+		return json({ success: true, question: questionWithAuthor }, { status: 201 });
 
 	} catch (error) {
 		console.error("Error al crear la pregunta:", error);

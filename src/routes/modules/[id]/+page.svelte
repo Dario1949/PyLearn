@@ -44,6 +44,7 @@
 			});
 
 			const result = await response.json();
+
 			if (!response.ok) {
 				throw new Error(
 					result.error || "No se pudo guardar tu progreso.",
@@ -51,17 +52,7 @@
 			}
 
 			// 3. Actualizamos el store local del usuario
-			authStore.state.update((current) => {
-				if (current.user) {
-					// La respuesta del API nos da el estado más reciente del progreso
-					current.user.points = result.progress.points;
-					current.user.completedModules =
-						result.progress.completedModules;
-					current.user.completedChallenges =
-						result.progress.completedChallenges;
-				}
-				return current;
-			});
+			await authStore.loadUserProgress(user.id);
 
 			onClose(); // Cerramos el modal
 			alert(

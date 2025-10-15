@@ -1,40 +1,25 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const usersPath = path.resolve('src/lib/data/users.json');
-const progressPath = path.resolve('src/lib/data/progress.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
 	try {
-		const allUsers = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-		const allProgress = JSON.parse(fs.readFileSync(progressPath, 'utf-8'));
+		const { data: allUsers } = await supabase.from('users').select('*');
+		const { data: allProgress } = await supabase.from('progress').select('*');
+		const { data: forumQuestions } = await supabase.from('forum_questions').select('author_id, solved');
 
-		const progressMap = new Map(allProgress.map(p => [p.userId, p]));
+		const progressMap = new Map(allProgress?.map(p => [p.user_id, p]) || []);
 
-		// Cargar preguntas del foro para contar publicaciones resueltas
-	let forumQuestions = [];
-	try {
-		const questionsPath = path.resolve('src/lib/data/forum-questions.json');
-		if (fs.existsSync(questionsPath)) {
-			forumQuestions = JSON.parse(fs.readFileSync(questionsPath, 'utf-8'));
-		}
-	} catch (error) {
-		console.warn('No se pudieron cargar las preguntas del foro:', error);
-	}
-
-	const combinedUsers = allUsers
-			.filter(user => user.role === 'student') // Solo incluimos estudiantes en el ranking
+		const combinedUsers = allUsers
+			?.filter(user => user.role === 'student')
 			.map(user => {
 				const { password, ...userProfile } = user;
 				const userProgress = progressMap.get(user.id);
 				const points = userProgress?.points || 0;
-				const completedModules = userProgress?.completedModules || [];
+				const completedModules = userProgress?.completed_modules || [];
 				const level = Math.max(1, completedModules.length);
 				
-				// Contar publicaciones resueltas del usuario
-				const solvedPosts = forumQuestions.filter(q => q.authorId === user.id && q.solved).length;
+				const solvedPosts = forumQuestions?.filter(q => q.author_id === user.id && q.solved).length || 0;
 
 				return {
 					...userProfile,
@@ -43,9 +28,9 @@ export async function GET() {
 					level,
 					completedModules,
 					solvedPosts,
-					badges: userProgress?.earnedBadges || []
+					badges: userProgress?.earned_badges || []
 				};
-			});
+			}) || [];
 
 		// Ordenamos los usuarios por puntos de mayor a menor
 		const sortedUsers = combinedUsers.sort((a, b) => b.points - a.points);

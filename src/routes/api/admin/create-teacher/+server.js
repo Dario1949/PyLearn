@@ -1,10 +1,6 @@
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '$lib/supabase.js';
 import { v4 as uuidv4 } from 'uuid';
-
-const usersPath = path.resolve('src/lib/data/users.json');
-const progressPath = path.resolve('src/lib/data/progress.json');
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request, locals }) {
@@ -21,41 +17,48 @@ export async function POST({ request, locals }) {
             return json({ success: false, error: 'Faltan campos requeridos.' }, { status: 400 });
         }
 
-        let users = fs.existsSync(usersPath) ? JSON.parse(fs.readFileSync(usersPath, 'utf-8')) : [];
-        let progress = fs.existsSync(progressPath) ? JSON.parse(fs.readFileSync(progressPath, 'utf-8')) : [];
+        const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', email)
+            .single();
 
-        if (users.some(u => u.email === email)) {
+        if (existingUser) {
             return json({ success: false, error: 'El correo ya está en uso.' }, { status: 409 });
         }
 
         const newTeacherId = uuidv4();
-        const newTeacher = {
-            id: newTeacherId,
-            name,
-            email,
-            password, // Hashear en producción
-            role: 'teacher'
-        };
+        
+        const { error: userError } = await supabase
+            .from('users')
+            .insert({
+                id: newTeacherId,
+                name,
+                email,
+                password,
+                role: 'teacher',
+                created_at: new Date().toISOString()
+            });
 
-        const newTeacherProgress = {
-            userId: newTeacherId,
-            points: 0,
-            level: 1,
-            progress: 0,
-            completedModules: [],
-            earnedBadges: [],
-            completedChallenges: [],
-            averageScore: 0,
-            streak: 0,
-            status: 'active',
-            lastActivity: new Date().toISOString().split('T')[0]
-        };
+        if (userError) throw userError;
 
-        users.push(newTeacher);
-        progress.push(newTeacherProgress);
+        const { error: progressError } = await supabase
+            .from('progress')
+            .insert({
+                user_id: newTeacherId,
+                points: 0,
+                level: 1,
+                progress: 0,
+                completed_modules: [],
+                earned_badges: [],
+                completed_challenges: [],
+                average_score: 0,
+                streak: 0,
+                status: 'active',
+                last_activity: new Date().toISOString().split('T')[0]
+            });
 
-        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
-        fs.writeFileSync(progressPath, JSON.stringify(progress, null, 2));
+        if (progressError) throw progressError;
 
         return json({ success: true, message: 'Docente creado con éxito.' }, { status: 201 });
 

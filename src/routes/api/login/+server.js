@@ -1,22 +1,18 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const usersPath = path.resolve('src/lib/data/users.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request, cookies }) {
     const { email, password } = await request.json();
 
-    if (!fs.existsSync(usersPath)) {
-        return json({ success: false, error: 'Base de datos no encontrada.' }, { status: 500 });
-    }
+    const { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .single();
 
-    const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-    // En una aplicación real, NUNCA guardes contraseñas en texto plano. Usa librerías como bcrypt para compararlas.
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (!user) {
+    if (error || !user) {
         return json({ success: false, error: 'Credenciales incorrectas' }, { status: 401 });
     }
 

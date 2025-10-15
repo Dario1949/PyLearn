@@ -1,23 +1,16 @@
-import fs from 'fs';
-import path from 'path';
 import { json } from '@sveltejs/kit';
-
-const usersPath = path.resolve('src/lib/data/users.json');
+import { supabase } from '$lib/supabase.js';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
     try {
-        let needsSetup = true; // Por defecto, asumimos que necesita configuración
-
-        if (fs.existsSync(usersPath)) {
-            const usersData = fs.readFileSync(usersPath, 'utf-8');
-            const users = JSON.parse(usersData);
-            // Si hay al menos un usuario, ya no necesita configuración inicial
-            if (users.length > 0) {
-                needsSetup = false;
-            }
-        }
-
+        // Verificar si hay usuarios en Supabase
+        const { data: users, error } = await supabase.from('users').select('id').limit(1);
+        
+        if (error) throw error;
+        
+        const needsSetup = users.length === 0;
+        
         return json({ needsInitialSetup: needsSetup });
 
     } catch (error) {

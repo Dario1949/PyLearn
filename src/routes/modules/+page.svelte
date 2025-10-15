@@ -114,7 +114,7 @@
 		if (!user) {
 			goto("/auth/login");
 			return;
-		}
+		}		
 
 		const response = await fetch("/api/progress/complete-lesson", {
 			method: "POST",
@@ -127,11 +127,18 @@
 		});
 
 		const result = await response.json();
+		
 		if (result?.success) {
 			// Usar el método del store para recargar el progreso
 			authStore.loadUserProgress(user.id);
 		}
 	}
+
+	$effect(() => {
+		authStore.loadUserProgress(user.id);
+		console.log($authState);
+		
+	})
 </script>
 
 <svelte:head>

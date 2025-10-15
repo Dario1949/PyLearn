@@ -1,10 +1,7 @@
 import '$lib/server/database-init.js';
 
-import fs from 'fs';
-import path from 'path';
 import { redirect } from '@sveltejs/kit';
-
-const usersPath = path.resolve('src/lib/data/users.json');
+import { supabase } from '$lib/supabase.js';
 
 // --- MEJORA: Definimos nuestras rutas privadas ---
 const privateRoutes = [
@@ -20,17 +17,31 @@ const privateRoutes = [
 export async function handle({ event, resolve }) {
     const sessionId = event.cookies.get('session_id');
 
-    // Obtenemos al usuario basado en la cookie (esta parte no cambia)
+    // Obtenemos al usuario basado en la cookie usando Supabase
     if (!sessionId) {
         event.locals.user = null;
     } else {
-        const users = fs.existsSync(usersPath) ? JSON.parse(fs.readFileSync(usersPath, 'utf-8')) : [];
-        const user = users.find((u) => u.id === sessionId);
-        if (user) {
-            const { password, ...safeUser } = user;
-            event.locals.user = safeUser;
-        } else {
+        try {
+            const { data: user, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', sessionId)
+                .single();
+            
+            if (user && !error) {
+                const { password, ...safeUser } = user;
+                event.locals.user = safeUser;
+            } else {
+                event.locals.user = null;
+                // Si la sesión no es válida, limpiar la cookie
+                if (error) {
+                    event.cookies.delete('session_id', { path: '/' });
+                }
+            }
+        } catch (e) {
+            console.error('Error verificando sesión:', e);
             event.locals.user = null;
+            event.cookies.delete('session_id', { path: '/' });
         }
     }
 

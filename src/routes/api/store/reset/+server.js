@@ -1,8 +1,5 @@
 import { json } from "@sveltejs/kit";
-import fs from "fs";
-import path from "path";
-
-const purchasesPath = path.resolve("src/lib/data/purchases.json");
+import { supabase } from '$lib/supabase.js';
 
 export async function POST({ locals }) {
   try {
@@ -16,19 +13,14 @@ export async function POST({ locals }) {
     }
 
     const userId = locals.user.id;
-    const purchases = fs.existsSync(purchasesPath)
-      ? JSON.parse(fs.readFileSync(purchasesPath, "utf-8"))
-      : [];
 
-    const pIndex = Array.isArray(purchases)
-      ? purchases.findIndex((p) => p.userId === userId)
-      : -1;
+    // Eliminar todas las compras del administrador
+    const { error } = await supabase
+      .from('purchases')
+      .delete()
+      .eq('user_id', userId);
 
-    if (pIndex !== -1) {
-      // Resetear las compras del administrador
-      purchases[pIndex] = { userId, unlocked: [], history: [] };
-      fs.writeFileSync(purchasesPath, JSON.stringify(purchases, null, 2), "utf-8");
-    }
+    if (error) throw error;
 
     return json({
       success: true,

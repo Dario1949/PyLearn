@@ -1,17 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '$lib/supabase.js';
 
 // 1. Leemos la clave de API de forma segura
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY);
-
-// 2. Definimos las rutas a todos los archivos de "base de datos" que modificaremos
-const modulesPath = path.resolve('src/lib/data/modules.json');
-const challengesPath = path.resolve('src/lib/data/challenges.json');
-const lessonsPath = path.resolve('src/lib/data/lessons.json');
-const promptsPath = path.resolve('src/lib/data/prompts.json');
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -26,12 +19,12 @@ export async function POST({ request }) {
       }
     });
 
-    // Leemos la plantilla del prompt desde el archivo JSON centralizado
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf-8'));
-    const promptTemplate = prompts.generarPlanDeModulo;
+    // Leemos la plantilla del prompt desde Supabase
+    const { data: prompts } = await supabase.from('prompts').select('*').eq('key', 'generarPlanDeModulo').single();
+    const promptTemplate = prompts?.content;
 
     if (!promptTemplate) {
-      throw new Error("La plantilla del prompt 'generarPlanDeModulo' no se encontró en prompts.json");
+      throw new Error("La plantilla del prompt 'generarPlanDeModulo' no se encontró en Supabase");
     }
 
     const prompt = promptTemplate
@@ -46,10 +39,48 @@ export async function POST({ request }) {
     const generatedData = JSON.parse(responseText);
 
     // --- ¡LÓGICA DE GUARDADO MEJORADA! ---
-    // Guardamos cada parte de la respuesta en su archivo correspondiente, sobreescribiendo el contenido anterior.
-    fs.writeFileSync(modulesPath, JSON.stringify(generatedData.modules || [], null, 2));
-    fs.writeFileSync(challengesPath, JSON.stringify(generatedData.challenges || [], null, 2));
-    fs.writeFileSync(lessonsPath, JSON.stringify(generatedData.lessons || [], null, 2));
+    // Guardamos cada parte en Supabase
+    if (generatedData.modules) {
+      const mappedModules = generatedData.modules.map(m => ({
+        id: m.id,
+        title: m.title,
+        description: m.description,
+        icon: m.icon,
+        difficulty: m.difficulty,
+        duration: m.duration,
+        challenge_id: m.challengeId
+      }));
+      await supabase.from('modules').delete().neq('id', 'dummy');
+      await supabase.from('modules').insert(mappedModules);
+    }
+
+    if (generatedData.challenges) {
+      const mappedChallenges = generatedData.challenges.map(c => ({
+        id: c.id,
+        module_id: c.moduleId,
+        title: c.title,
+        description: c.description,
+        category: c.category,
+        difficulty: c.difficulty,
+        points: c.points,
+        time_limit: c.timeLimit,
+        code: c.code,
+        test_cases: c.testCases
+      }));
+      await supabase.from('challenges').delete().neq('id', 'dummy');
+      await supabase.from('challenges').insert(mappedChallenges);
+    }
+
+    if (generatedData.lessons) {
+      const mappedLessons = generatedData.lessons.map(l => ({
+        id: l.id,
+        module_id: l.moduleId,
+        title: l.title,
+        content: l.content
+      }));
+      await supabase.from('lessons').delete().neq('id', 'dummy');
+      await supabase.from('lessons').insert(mappedLessons);
+    }
 
     console.log('Successfully generated and saved new modules, challenges, and lessons.');
 

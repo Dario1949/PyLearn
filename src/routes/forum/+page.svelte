@@ -56,29 +56,43 @@
   // 5. Funciones para interactuar con la API
   async function askQuestion(postData) {
     if (!user) return;
-    const response = await fetch("/api/forum/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...postData, authorId: user.id }),
-    });
+    
+    console.log('Enviando datos:', { ...postData, authorId: user.id });
+    
+    try {
+      const response = await fetch("/api/forum/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...postData, authorId: user.id }),
+      });
 
-    const rr = await response.json();
+      const result = await response.json();
+      console.log('Respuesta del servidor:', result);
 
-    if (rr.success) {
-      alert("¡Pregunta publicada! Has ganado 5 puntos.");
-      await invalidateAll();
-      showCreateModal = false;
-    } else {
-      alert(rr.error);
-    }
-
-    /* if (response.ok) {
-      alert("¡Pregunta publicada! Has ganado 5 puntos.");
-      await invalidateAll();
-      showCreateModal = false;
-    } else {
+      if (result.success && result.question) {
+        console.log('Posts antes:', posts.length);
+        console.log('Nueva pregunta:', result.question);
+        
+        // Agregar la nueva pregunta al estado local inmediatamente
+        posts = [result.question, ...posts];
+        
+        console.log('Posts después:', posts.length);
+        
+        alert("¡Pregunta publicada! Has ganado 5 puntos.");
+        showCreateModal = false;
+        
+        // Recargar datos del servidor
+        setTimeout(async () => {
+          await invalidateAll();
+        }, 100);
+      } else {
+        console.error('Error en respuesta:', result);
+        alert(result.error || "Error al publicar la pregunta");
+      }
+    } catch (error) {
+      console.error('Error al crear pregunta:', error);
       alert("Error al publicar la pregunta.");
-    } */
+    }
   }
 
   async function answerQuestion(questionId, content, formElement) {
@@ -258,7 +272,7 @@
                 <div class="flex-1">
                   <ForumPost {post} />
                 </div>
-                {#if user.id === post.authorId || user.role === 'admin' || user.role === 'teacher'}
+                {#if user.id === post.author_id || user.role === 'admin' || user.role === 'teacher'}
                   <div class="flex gap-2 ml-4">
                     <Button
                       size="sm"
