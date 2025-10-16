@@ -75,6 +75,8 @@ Responde en formato JSON con: {"isCorrect": boolean, "feedback": "string", "scor
 
     } catch (error) {
         console.error('Error verificando el reto con IA:', error);
+        console.error('API Key disponible:', !!PRIVATE_GOOGLE_API_KEY);
+        console.error('Modelo disponible:', !!model);
         return json({ success: false, error: 'No se pudo verificar el código en este momento.' }, { status: 500 });
     }
 }
