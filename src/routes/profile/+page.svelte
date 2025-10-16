@@ -309,35 +309,22 @@
     error = "";
 
     try {
-      let avatarUrl = user().avatar; // Mantener avatar actual por defecto
-
-      // Si hay un nuevo archivo de avatar, subirlo primero
-      if (avatarFile) {
-        const formData = new FormData();
-        formData.append('avatar', avatarFile);
-
-        const uploadRes = await fetch('/api/profile/upload-avatar', {
-          method: 'POST',
-          body: formData
-        });
-
-        const uploadData = await uploadRes.json();
-        
-        if (uploadRes.ok && uploadData.success) {
-          avatarUrl = uploadData.avatarUrl;
-        } else {
-          error = uploadData.error || 'Error al subir el avatar';
-          return;
-        }
-      }
-
-      // Actualizar información del perfil
+      // Preparar datos del perfil
       const updatedData = {
         email: user().email,
         name: tempName,
         bio: tempBio,
-        avatar: avatarUrl
       };
+
+      // Si hay un nuevo avatar (base64), incluirlo
+      if (tempAvatar && tempAvatar.startsWith('data:image')) {
+        updatedData.avatar = tempAvatar;
+      }
+
+      console.log('Enviando datos:', {
+        ...updatedData,
+        avatar: updatedData.avatar ? 'data:image...' : 'sin cambios'
+      });
 
       const res = await fetch("/api/profile", {
         method: "PUT",
@@ -346,6 +333,7 @@
       });
 
       const data = await res.json().catch(() => ({}));
+      console.log('Respuesta del servidor:', data);
 
       if (res.ok && data?.success) {
         // Actualiza auth global
