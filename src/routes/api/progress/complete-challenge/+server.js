@@ -55,24 +55,10 @@ export async function POST({ request }) {
     
     console.log('Módulo del reto:', moduleId);
     
+    // Si completamos un reto, el módulo se considera completado
     if (moduleId && !completedModules.includes(moduleId)) {
-      // Verificar si todos los retos del módulo están completados
-      const { data: moduleChallenges } = await supabase
-        .from('challenges')
-        .select('id')
-        .eq('module_id', moduleId);
-      
-      console.log('Retos del módulo:', moduleChallenges);
-      
-      if (moduleChallenges?.length) {
-        const allDone = moduleChallenges.every(c => newCompletedChallenges.includes(c.id));
-        console.log('¿Todos los retos del módulo completados?', allDone);
-        
-        if (allDone) {
-          newCompletedModules.push(moduleId);
-          console.log('Módulo completado agregado:', moduleId);
-        }
-      }
+      newCompletedModules.push(moduleId);
+      console.log('Módulo completado agregado:', moduleId);
     }
 
     // Calcular nivel basado en módulos completados
@@ -101,6 +87,7 @@ export async function POST({ request }) {
     }
 
     console.log('Progreso guardado exitosamente:', saved);
+    console.log('Módulos completados finales:', newCompletedModules);
 
     return json({ success: true, progress: saved });
   } catch (err) {

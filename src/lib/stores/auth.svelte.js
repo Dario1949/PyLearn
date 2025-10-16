@@ -156,8 +156,10 @@ class AuthStore {
   
   async loadUserProgress(userId) {
     try {
+      console.log('Loading progress for user:', userId);
       const response = await fetch(`/api/progress/${userId}`);
       const data = await response.json();
+      console.log('Progress API response:', data);
       
       if (data.success && data.progress) {
         const { update } = this.state;
@@ -175,6 +177,8 @@ class AuthStore {
               averageScore: data.progress.average_score || 0,
               totalPointsEarned: data.progress.total_points_earned || 0
             };
+            
+            console.log('Updated user data:', updatedUser);
             
             // También actualizar localStorage
             if (typeof window !== 'undefined') {
@@ -194,7 +198,7 @@ class AuthStore {
         console.log('No se encontró progreso para el usuario o es nuevo');
       }
     } catch (error) {
-      console.warn('No se pudo cargar el progreso del usuario:', error);
+      console.error('Error loading user progress:', error);
     }
   }
   

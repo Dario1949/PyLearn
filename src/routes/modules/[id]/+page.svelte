@@ -25,40 +25,32 @@
 		selectedChallenge = null;
 	}
 
-	// --- FUNCIÓN 'onComplete' CORREGIDA Y FINAL ---
 	async function onComplete() {
 		if (!user || !module || !module.challenge) return;
 
 		try {
-			// 1. Llamamos al endpoint correcto
 			const response = await fetch("/api/progress/complete-challenge", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				// 2. Enviamos los datos que el endpoint realmente espera
 				body: JSON.stringify({
 					userId: user.id,
 					challengeId: module.challenge.id,
-					points: module.challenge.points,
-					// El endpoint se encargará de encontrar el moduleId si es necesario
-				}),
+					points: module.challenge.points
+				})
 			});
 
 			const result = await response.json();
 
 			if (!response.ok) {
-				throw new Error(
-					result.error || "No se pudo guardar tu progreso.",
-				);
+				throw new Error(result.error || "Error al completar el reto");
 			}
 
-			// 3. Actualizamos el store local del usuario
-			await authStore.loadUserProgress(user.id);
-
-			onClose(); // Cerramos el modal
-			alert(
-				`¡Felicidades! Has completado el módulo y ganado ${module.challenge.points} puntos.`,
-			);
-			goto("/modules"); // Volvemos a la lista de módulos
+			if (result.success) {
+				await authStore.loadUserProgress(user.id);
+				onClose();
+				alert(`¡Felicidades! Has completado el módulo y ganado ${module.challenge.points} puntos.`);
+				goto("/modules");
+			}
 		} catch (err) {
 			alert(`Error: ${err.message}`);
 		}
@@ -70,6 +62,14 @@
 </svelte:head>
 
 <div class="max-w-4xl mx-auto px-4 py-8">
+	<div class="mb-6">
+		<button 
+			on:click={() => { window.location.href = '/modules'; }}
+			class="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition-colors"
+		>
+			← Volver a Módulos
+		</button>
+	</div>
 	{#if error}
 		<div class="text-center">
 			<h1 class="text-2xl font-bold text-destructive mb-4">
@@ -88,6 +88,8 @@
 				{module.title}
 			</h1>
 			<p class="text-lg text-muted mt-2">{module.description}</p>
+			
+
 		</div>
 
 		<div class="space-y-4 mb-12">
@@ -96,8 +98,8 @@
 			{#each module.lessons as lesson, index}
 				<div class="bg-card p-5 border border-border rounded-lg">
 					<h3 class="text-lg font-bold text-primary">
-						<span class="text-primary/60 mr-2">{index + 1}.</span
-						>{lesson.title}
+						<span class="text-primary/60 mr-2">{index + 1}.</span>
+						{lesson.title}
 					</h3>
 					<p class="mt-2 text-muted leading-relaxed">
 						{lesson.content}
@@ -121,10 +123,7 @@
 					Completa el siguiente reto para finalizar el módulo y ganar {module
 						.challenge.points} puntos.
 				</p>
-				<Button
-					size="lg"
-					on:click={() => openChallengeModal(module.challenge)}
-				>
+				<Button size="lg" on:click={() => openChallengeModal(module.challenge)}>
 					Resolver: {module.challenge.title}
 				</Button>
 			</div>

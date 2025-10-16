@@ -57,7 +57,7 @@
       return;
     }
     // La validación del correo institucional solo aplica si no es la configuración de admin
-    if (!data.needsInitialSetup && !formData.email.includes("@cesmag.edu.co")) {
+    if (!data.needsInitialSetup && !formData.email.includes("@unicesmag.edu.co")) {
       error = "Debes usar tu correo institucional de CESMAG";
       return;
     }
@@ -132,7 +132,7 @@
             <label class="block text-sm font-medium text-foreground mb-2">
               Tipo de Usuario
             </label>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-3">
               <label
                 class="flex items-center p-3 border border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors {formData.role ===
                 'student'
@@ -155,19 +155,7 @@
                   </div>
                   <span class="text-sm font-medium">Estudiante</span>
                 </div>
-              </label>
-              <label
-                class="flex items-center p-3 border border-border rounded-lg cursor-not-allowed bg-muted/50 opacity-50"
-                title="Los docentes son creados por un administrador"
-              >
-                <input type="radio" value="teacher" class="sr-only" disabled />
-                <div class="flex items-center">
-                  <div
-                    class="w-4 h-4 rounded-full border-2 border-primary mr-2 flex items-center justify-center"
-                  ></div>
-                  <span class="text-sm font-medium">Docente</span>
-                </div>
-              </label>
+              </label>              
             </div>
           </div>
         {/if}
@@ -201,7 +189,7 @@
             bind:value={formData.email}
             placeholder={data.needsInitialSetup
               ? "admin@ejemplo.com"
-              : "tu-nombre@cesmag.edu.co"}
+              : "tu-nombre@unicesmag.edu.co"}
             required
             class="w-full"
           />

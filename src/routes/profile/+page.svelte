@@ -333,6 +333,7 @@
 
       if (res.ok && data?.success) {
         // Actualiza auth global
+        authStore.loadUserProgress(user().id)
         authStore.state.update((current) => ({
           ...current,
           user: data.user,

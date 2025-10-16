@@ -8,12 +8,15 @@ import { supabase } from '$lib/supabase.js';
 export async function GET({ params }) {
   const { userId } = params;
 
-  if (!userId) {
+  if (!userId || userId === 'undefined' || userId === 'null') {
+    console.log('Invalid userId received:', userId);
     return new Response(JSON.stringify({ success: false, error: 'userId requerido' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
   }
+  
+  console.log('Getting progress for userId:', userId);
 
   try {
     const { data: progress, error } = await supabase

@@ -21,6 +21,8 @@ export async function PUT({ request, locals }) {
         }
       );
     }
+    
+    console.log('Profile PUT request from:', locals.user.email);
 
     let body;
     try {
@@ -95,39 +97,53 @@ export async function PUT({ request, locals }) {
         updates.bio.trim() !== (currentUser.bio || "").trim());
 
     // Leer desbloqueos del usuario desde Supabase
-    const { data: userPurchases } = await supabase
+    const { data: userPurchases, error: purchasesError } = await supabase
       .from('purchases')
       .select('item_id')
       .eq('user_id', locals.user.id);
     
+    if (purchasesError) {
+      console.log('Purchases table not found or error:', purchasesError);
+    }
+    
     const unlocked = userPurchases?.map(p => p.item_id) || [];
 
     // Cargar catálogo desde Supabase
-    const { data: catalog } = await supabase.from('store_catalog').select('*');
+    const { data: catalog, error: catalogError } = await supabase.from('store_catalog').select('*');
+    
+    if (catalogError) {
+      console.log('Store catalog not found or error:', catalogError);
+    }
+    
     const getCost = (id) => Number(catalog?.find((i) => i.id === id)?.cost ?? 0);
 
-    if (intendsAvatar && !unlocked.includes("profile_avatar")) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Necesitas desbloquear el cambio de avatar en la tienda.",
-          required: "profile_avatar",
-          cost: getCost("profile_avatar"),
-        }),
-        { status: 403, headers: { "Content-Type": "application/json" } }
-      );
-    }
-    if (intendsInfo && !unlocked.includes("profile_info")) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error:
-            "Necesitas desbloquear la edición de información en la tienda.",
-          required: "profile_info",
-          cost: getCost("profile_info"),
-        }),
-        { status: 403, headers: { "Content-Type": "application/json" } }
-      );
+    // Solo validar tienda si las tablas existen
+    if (catalog && userPurchases !== null) {
+      if (intendsAvatar && !unlocked.includes("profile_avatar")) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "Necesitas desbloquear el cambio de avatar en la tienda.",
+            required: "profile_avatar",
+            cost: getCost("profile_avatar"),
+          }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      if (intendsInfo && !unlocked.includes("profile_info")) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error:
+              "Necesitas desbloquear la edición de información en la tienda.",
+            required: "profile_info",
+            cost: getCost("profile_info"),
+          }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      console.log('Store validation skipped - tables not available');
     }
 
     // ---- PROCESO AVATAR (si viene en dataURL) ----

@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
+import { PRIVATE_GOOGLE_API_KEY, PRIVATE_GOOGLE_MODEL } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase.js';
 
@@ -13,7 +13,7 @@ export async function POST({ request }) {
 
     // Activamos el "Modo JSON" para asegurar que la respuesta de la IA sea válida
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: PRIVATE_GOOGLE_MODEL,
       generationConfig: {
         responseMimeType: 'application/json'
       }
@@ -38,7 +38,7 @@ export async function POST({ request }) {
     // La respuesta de la IA ahora es un objeto con tres arrays: modules, challenges y lessons
     const generatedData = JSON.parse(responseText);
 
-    // --- ¡LÓGICA DE GUARDADO MEJORADA! ---
+    // --- LÓGICA DE GUARDADO - AGREGAR EN LUGAR DE REEMPLAZAR ---
     // Guardamos cada parte en Supabase
     if (generatedData.modules) {
       const mappedModules = generatedData.modules.map(m => ({
@@ -50,7 +50,6 @@ export async function POST({ request }) {
         duration: m.duration,
         challenge_id: m.challengeId
       }));
-      await supabase.from('modules').delete().neq('id', 'dummy');
       await supabase.from('modules').insert(mappedModules);
     }
 
@@ -67,7 +66,6 @@ export async function POST({ request }) {
         code: c.code,
         test_cases: c.testCases
       }));
-      await supabase.from('challenges').delete().neq('id', 'dummy');
       await supabase.from('challenges').insert(mappedChallenges);
     }
 
@@ -78,7 +76,6 @@ export async function POST({ request }) {
         title: l.title,
         content: l.content
       }));
-      await supabase.from('lessons').delete().neq('id', 'dummy');
       await supabase.from('lessons').insert(mappedLessons);
     }
 

@@ -1,4 +1,5 @@
 <script>
+  import { browser } from "$app/environment";
   import Button from "$lib/components/ui/Button.svelte";
 
   // Las props 'module' y 'user' vienen de la página principal /modules
@@ -11,8 +12,20 @@
   };
 
   // --- Lógica derivada para manejar datos de forma segura ---
-  const status = $derived(module?.status ?? "locked");
-  const progress = $derived(module?.progress ?? 0);
+  const status = $derived(progress === 100 ? "completed" : (module?.status ?? "locked"));
+  
+
+  
+  let progress = $state(0);
+  
+  $effect(() => {
+    if (user?.completedModules?.includes(module?.id)) {
+      progress = 100;
+    } else {
+      progress = module?.progress ?? 0;
+    }
+  });
+  
   const difficulty = $derived(module?.difficulty ?? "Desconocida");
   const diffClass = $derived(
     difficultyColors[difficulty] ?? "bg-muted text-muted-foreground",
@@ -91,11 +104,11 @@
       <div class="mb-4">
         <div class="flex justify-between items-center mb-1">
           <span
-            class="text-sm font-medium {status === 'completed'
-              ? 'text-primary'
-              : 'text-secondary'}"
+            class="text-sm font-medium {progress === 100
+              ? 'text-green-600'
+              : 'text-muted'}"
           >
-            {status === "completed" ? "Completado" : "En Progreso"}
+            {progress === 100 ? "Completado" : "Sin Completar"}
           </span>
           <span class="text-sm font-medium text-card-foreground"
             >{progress}%</span
@@ -103,13 +116,13 @@
         </div>
         <div class="w-full bg-muted/20 rounded-full h-2">
           <div
-            class="h-2 rounded-full transition-all duration-300 {status ===
-            'completed'
-              ? 'bg-primary'
-              : 'bg-secondary'}"
+            class="h-2 rounded-full transition-all duration-300 {progress === 100
+              ? 'bg-green-500'
+              : 'bg-muted'}"
             style="width: {progress}%"
           ></div>
         </div>
+
       </div>
     {:else}
       <div

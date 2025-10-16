@@ -17,21 +17,36 @@ function mimeFor(ext) {
 }
 
 export async function GET({ params }) {
-  const file = params.file || '';
-  if (!file) return new Response('Not found', { status: 404 });
-
-  const filePath = path.join(uploadsDir, file);
-  if (!fs.existsSync(filePath)) {
-    return new Response('Not found', { status: 404 });
-  }
-
-  const ext = path.extname(filePath).toLowerCase();
-  const body = fs.readFileSync(filePath);
-
-  return new Response(body, {
-    headers: {
-      'Content-Type': mimeFor(ext),
-      'Cache-Control': 'public, max-age=31536000, immutable'
+  try {
+    const file = params.file || '';
+    console.log('Avatar request for file:', file);
+    
+    if (!file) {
+      console.log('No file specified');
+      return new Response('Not found', { status: 404 });
     }
-  });
+
+    const filePath = path.join(uploadsDir, file);
+    console.log('Looking for file at:', filePath);
+    
+    if (!fs.existsSync(filePath)) {
+      console.log('File not found:', filePath);
+      return new Response('Not found', { status: 404 });
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    const body = fs.readFileSync(filePath);
+    
+    console.log('Serving file:', file, 'size:', body.length);
+
+    return new Response(body, {
+      headers: {
+        'Content-Type': mimeFor(ext),
+        'Cache-Control': 'public, max-age=31536000, immutable'
+      }
+    });
+  } catch (error) {
+    console.error('Error serving avatar:', error);
+    return new Response('Server error', { status: 500 });
+  }
 }

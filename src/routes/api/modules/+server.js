@@ -12,3 +12,50 @@ export async function GET() {
 		return json({ error: 'No se pudieron cargar los módulos.' }, { status: 500 });
 	}
 }
+
+/** @type {import('./$types').RequestHandler} */
+export async function POST({ request, locals }) {
+	if (locals.user?.role !== 'teacher' && locals.user?.role !== 'admin') {
+		return json({ error: 'Acceso no autorizado' }, { status: 403 });
+	}
+
+	try {
+		const { title, description, difficulty, estimatedTime, lessons } = await request.json();
+		
+		if (!title || !description) {
+			return json({ error: 'Faltan campos requeridos' }, { status: 400 });
+		}
+
+		const moduleId = `module_${Date.now()}`;
+		
+		// Crear el módulo
+		const { error: moduleError } = await supabase.from('modules').insert({
+			id: moduleId,
+			title,
+			description,
+			difficulty: difficulty || 'beginner',
+			duration: `${estimatedTime || 30} min`,
+			icon: '📚'
+		});
+
+		if (moduleError) throw moduleError;
+
+		// Crear las lecciones si existen
+		if (lessons && lessons.length > 0) {
+			const mappedLessons = lessons.map(lesson => ({
+				id: lesson.id || `lesson_${Date.now()}_${Math.random()}`,
+				module_id: moduleId,
+				title: lesson.title,
+				content: lesson.content
+			}));
+			
+			const { error: lessonsError } = await supabase.from('lessons').insert(mappedLessons);
+			if (lessonsError) throw lessonsError;
+		}
+
+		return json({ success: true, moduleId });
+	} catch (error) {
+		console.error('Error creando módulo:', error);
+		return json({ error: 'Error al crear el módulo' }, { status: 500 });
+	}
+}

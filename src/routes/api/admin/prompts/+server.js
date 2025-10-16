@@ -12,13 +12,17 @@ export async function GET({ locals }) {
     try {
         const { data: prompts, error } = await supabase
             .from('prompts')
-            .select('*')
-            .single();
+            .select('*');
 
-        if (error) throw error;
-        return json(prompts.content || {});
+        if (error) {
+            console.error('Error cargando prompts:', error);
+            return json([]);
+        }
+        
+        return json(prompts || []);
     } catch (error) {
-        return json({ error: 'No se pudieron cargar los prompts.' }, { status: 500 });
+        console.error('Error cargando prompts:', error);
+        return json([]);
     }
 }
 
@@ -33,13 +37,21 @@ export async function POST({ request, locals }) {
     try {
         const updatedPrompts = await request.json();
         
-        const { error } = await supabase
-            .from('prompts')
-            .upsert({ id: 1, content: updatedPrompts });
+        // Actualizar cada prompt individualmente
+        for (const prompt of updatedPrompts) {
+            const { error } = await supabase
+                .from('prompts')
+                .upsert(prompt, { onConflict: 'key' });
+            
+            if (error) {
+                console.error('Error actualizando prompt:', prompt.key, error);
+                throw error;
+            }
+        }
 
-        if (error) throw error;
         return json({ success: true, message: 'Prompts actualizados con éxito.' });
     } catch (error) {
-        return json({ error: 'No se pudieron guardar los prompts.' }, { status: 500 });
+        console.error('Error guardando prompts:', error);
+        return json({ error: `No se pudieron guardar los prompts: ${error.message}` }, { status: 500 });
     }
 }

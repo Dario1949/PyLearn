@@ -16,6 +16,7 @@
 	let error = $state(null);
 	let fetchedOnce = false;
 
+
 	// 3. Fetch de datos en cliente
 	$effect(async () => {
 		if (!browser) return;
@@ -67,18 +68,17 @@
 			let status = "locked";
 			let progress = 0;
 
-			// Lógica para 'user' (ahora 'currentUser')
+	
+
 			if (currentUser) {
 				if (isCompleted) {
 					status = "completed";
 					progress = 100;
 				} else if (!inProgressFound) {
 					status = "in-progress";
-					progress = 25; // demo
 					inProgressFound = true;
 				}
 			} else {
-				// Invitado: habilita el primero
 				if (!inProgressFound) {
 					status = "in-progress";
 					inProgressFound = true;
@@ -134,10 +134,16 @@
 		}
 	}
 
+
+
+	// Cargar progreso solo una vez cuando el usuario cambie
+	let lastUserId = $state(null);
 	$effect(() => {
-		authStore.loadUserProgress(user.id);
-		console.log($authState);
-		
+		const currentUserId = user()?.id;
+		if (currentUserId && currentUserId !== lastUserId) {
+			lastUserId = currentUserId;
+			authStore.loadUserProgress(currentUserId);
+		}
 	})
 </script>
 
@@ -218,6 +224,7 @@
 				{#each learningState().modules as module (module.id)}
 					<ModuleCard
 						{module}
+						user={user()}
 						onComplete={() => handleCompleteModule(module)}
 					/>
 				{/each}

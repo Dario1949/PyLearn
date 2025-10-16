@@ -156,39 +156,62 @@
   </div>
 </section>
 
-<!-- Testimonials Section -->
+<!-- How it Works Section -->
 <section class="py-20 bg-background">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
       <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-6" style="font-family: 'Montserrat', sans-serif;">
-        Lo que Dicen Nuestros Estudiantes
+        ¿Cómo Funciona PyLearn?
       </h2>
       <p class="text-xl text-muted max-w-3xl mx-auto">
-        Conoce las experiencias de estudiantes que ya están aprendiendo con PyLearn CESMAG
+        Descubre paso a paso cómo aprenderás Python de manera divertida y efectiva
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <TestimonialCard
-        name="María González"
-        program="Ingeniería de Sistemas - 1er Semestre"
-        quote="Nunca pensé que programar pudiera ser tan divertido. Los retos me mantienen motivada y siempre quiero seguir aprendiendo más."
-        avatar="/placeholder.svg?height=60&width=60"
-      />
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="bg-card rounded-xl p-6 border border-border text-center">
+        <div class="text-4xl mb-4">📚</div>
+        <h3 class="text-lg font-semibold text-foreground mb-3">1. Módulos</h3>
+        <p class="text-sm text-muted">Estudia lecciones interactivas sobre conceptos de Python. Cada módulo tiene contenido teórico y ejemplos prácticos que debes completar para desbloquear el reto final.</p>
+      </div>
       
-      <TestimonialCard
-        name="Carlos Rodríguez"
-        program="Ingeniería de Software - 1er Semestre"
-        quote="La gamificación hace que cada clase sea emocionante. Ver mi progreso en el ranking me motiva a esforzarme más cada día."
-        avatar="/placeholder.svg?height=60&width=60"
-      />
+      <div class="bg-card rounded-xl p-6 border border-border text-center">
+        <div class="text-4xl mb-4">🎯</div>
+        <h3 class="text-lg font-semibold text-foreground mb-3">2. Retos</h3>
+        <p class="text-sm text-muted">Resuelve desafíos de programación que ponen a prueba lo aprendido. Cada reto completado te da puntos y marca el módulo como 100% completado.</p>
+      </div>
       
-      <TestimonialCard
-        name="Ana Martínez"
-        program="Tecnología en Sistemas - 1er Semestre"
-        quote="Los módulos están muy bien explicados y los ejercicios son perfectos para practicar. ¡Ya no le tengo miedo a la programación!"
-        avatar="/placeholder.svg?height=60&width=60"
-      />
+      <div class="bg-card rounded-xl p-6 border border-border text-center">
+        <div class="text-4xl mb-4">🏪</div>
+        <h3 class="text-lg font-semibold text-foreground mb-3">3. Tienda</h3>
+        <p class="text-sm text-muted">Usa los puntos ganados para comprar avatares, temas personalizados y otros elementos que mejoran tu experiencia de aprendizaje.</p>
+      </div>
+      
+      <div class="bg-card rounded-xl p-6 border border-border text-center">
+        <div class="text-4xl mb-4">🏆</div>
+        <h3 class="text-lg font-semibold text-foreground mb-3">4. Ranking</h3>
+        <p class="text-sm text-muted">Compite con tus compañeros en la tabla de clasificación. Gana más puntos completando retos y mantén tu racha diaria de estudio activa.</p>
+      </div>
+    </div>
+    
+    <div class="mt-12 bg-primary/10 rounded-xl p-8 border border-primary/20">
+      <div class="text-center">
+        <h3 class="text-xl font-semibold text-foreground mb-4">💡 Funciones Adicionales</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+          <div>
+            <strong class="text-foreground">🗣️ Foro:</strong>
+            <span class="text-muted">Haz preguntas y ayuda a otros estudiantes. Gana puntos por participar en la comunidad.</span>
+          </div>
+          <div>
+            <strong class="text-foreground">📊 Progreso:</strong>
+            <span class="text-muted">Visualiza tu avance, estadísticas y logros alcanzados en tiempo real.</span>
+          </div>
+          <div>
+            <strong class="text-foreground">🎨 Personalización:</strong>
+            <span class="text-muted">Cambia tu avatar, tema de colores y personaliza tu perfil con elementos de la tienda.</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

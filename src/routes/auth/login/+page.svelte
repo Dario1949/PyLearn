@@ -76,7 +76,7 @@
             id="email"
             type="email"
             bind:value={email}
-            placeholder="tu-email@cesmag.edu.co"
+            placeholder="tu-email@unicesmag.edu.co"
             required
             class="w-full"
           />

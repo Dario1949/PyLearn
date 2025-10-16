@@ -1,4 +1,6 @@
 <script>
+	import { authStore } from "$lib/stores/auth.svelte";
+
   let me = $state({ points: 0, unlocked: [], catalog: [] });
   let loading = $state(false);
   let error = $state("");
@@ -114,6 +116,7 @@
       if (!res.ok || !data?.success)
         throw new Error(data?.error || "No se pudo completar la compra");
 
+      
       me.points = Number(data.points || 0);
       me.unlocked = Array.isArray(data.unlocked) ? data.unlocked : me.unlocked;
     } catch (e) {

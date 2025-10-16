@@ -8,13 +8,39 @@
     title: module?.title || '',
     description: module?.description || '',
     difficulty: module?.difficulty || 'beginner',
-    estimatedTime: module?.estimatedTime || 30,
+    estimatedTime: parseInt(module?.duration?.replace(/\D/g, '')) || 30,
     prerequisites: module?.prerequisites || [],
-    learningObjectives: module?.learningObjectives || []
+    learningObjectives: module?.learningObjectives || [],
+    lessons: module?.lessons || []
+  });
+
+  // Actualizar formData cuando cambie el módulo
+  $effect(() => {
+    if (module) {
+      formData.title = module.title || '';
+      formData.description = module.description || '';
+      formData.difficulty = module.difficulty || 'beginner';
+      formData.estimatedTime = parseInt(module.duration?.replace(/\D/g, '')) || 30;
+      formData.prerequisites = module.prerequisites || [];
+      formData.learningObjectives = module.learningObjectives || [];
+      formData.lessons = module.lessons || [];
+    }
   });
   
   let isSaving = $state(false);
   
+  function addLesson() {
+    formData.lessons = [...formData.lessons, {
+      id: `lesson_${Date.now()}`,
+      title: 'Nueva Lección',
+      content: ''
+    }];
+  }
+
+  function removeLesson(index) {
+    formData.lessons = formData.lessons.filter((_, i) => i !== index);
+  }
+
   async function handleSave() {
     isSaving = true;
     try {
@@ -25,7 +51,8 @@
       });
       
       if (response.ok) {
-        onSave();
+        const savedModule = await response.json();
+        onSave(savedModule);
       } else {
         alert('Error al guardar el módulo');
       }
@@ -94,6 +121,45 @@
           rows="3"
           placeholder="Objetivos separados por líneas"
         ></textarea>
+      </div>
+      
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <label class="block text-sm font-medium text-foreground">Lecciones ({formData.lessons.length})</label>
+          <Button size="sm" on:click={addLesson}>➕ Agregar Lección</Button>
+        </div>
+        
+        <div class="space-y-4 max-h-60 overflow-y-auto">
+          {#each formData.lessons as lesson, index}
+            <div class="border border-border rounded-lg p-4 bg-muted/20">
+              <div class="flex items-center gap-2 mb-3">
+                <Input 
+                  bind:value={lesson.title} 
+                  placeholder="Título de la lección" 
+                  class="flex-1"
+                />
+                <button 
+                  on:click={() => removeLesson(index)} 
+                  class="text-red-600 hover:text-red-800 p-1"
+                  title="Eliminar lección"
+                >
+                  🗑️
+                </button>
+              </div>
+              <textarea 
+                bind:value={lesson.content}
+                class="w-full p-3 border border-border rounded-lg bg-background text-foreground"
+                rows="3"
+                placeholder="Contenido de la lección (Markdown soportado)..."
+              ></textarea>
+            </div>
+          {:else}
+            <div class="text-center py-8 text-muted border border-dashed border-border rounded-lg">
+              <p class="mb-2">📚 No hay lecciones aún</p>
+              <p class="text-sm">Haz clic en "Agregar Lección" para comenzar</p>
+            </div>
+          {/each}
+        </div>
       </div>
     </div>
     
