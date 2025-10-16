@@ -1,13 +1,5 @@
 // src/routes/api/profile/+server.js
-import fs from "fs";
-import path from "path";
 import { supabase } from '$lib/supabase.js';
-
-const uploadsDir = path.resolve("uploads/avatars");
-
-function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
 
 export async function PUT({ request, locals }) {
   try {
@@ -157,25 +149,22 @@ export async function PUT({ request, locals }) {
         );
         if (!matches || matches.length !== 3)
           throw new Error("Formato de avatar inválido");
-        let ext = matches[1].toLowerCase();
-        if (ext === "jpeg") ext = "jpg";
-        if (ext === "svg+xml") ext = "svg";
-
+        
+        // Validar tamaño del base64 (aproximadamente 2MB)
         const base64Data = matches[2];
-        const buffer = Buffer.from(base64Data, "base64");
+        const sizeInBytes = (base64Data.length * 3) / 4;
+        if (sizeInBytes > 2 * 1024 * 1024) {
+          throw new Error("Imagen demasiado grande (máximo 2MB)");
+        }
 
-        ensureDir(uploadsDir);
-        const fileName = `${email.split("@")[0]}-${Date.now()}.${ext}`;
-        const filePath = path.join(uploadsDir, fileName);
-        fs.writeFileSync(filePath, buffer);
-
-        updates.avatar = `/uploads/avatars/${fileName}`;
+        // Guardar directamente el data URL en la base de datos
+        updates.avatar = updates.avatar;
       } catch (e) {
-        console.error("Error al guardar el avatar:", e);
+        console.error("Error al procesar el avatar:", e);
         return new Response(
           JSON.stringify({
             success: false,
-            error: "No se pudo procesar la imagen",
+            error: e.message || "No se pudo procesar la imagen",
           }),
           {
             status: 500,
