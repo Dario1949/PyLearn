@@ -12,7 +12,7 @@ if (!PRIVATE_GOOGLE_API_KEY) {
 
 // Inicializa el cliente de IA
 const genAI = PRIVATE_GOOGLE_API_KEY ? new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY) : null;
-const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-pro' }) : null;
 
 
 
