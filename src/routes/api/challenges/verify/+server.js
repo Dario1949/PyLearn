@@ -25,6 +25,9 @@ function cleanJsonString(str) {
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
     try {
+        console.log('Iniciando verificación de challenge');
+        console.log('API Key disponible:', !!PRIVATE_GOOGLE_API_KEY);
+        
         // Verificar que la IA está disponible
         if (!model) {
             console.error('Google AI no está configurado correctamente');
@@ -32,6 +35,7 @@ export async function POST({ request }) {
         }
 
         const { challenge, userCode } = await request.json();
+        console.log('Datos recibidos - Challenge:', !!challenge, 'UserCode:', !!userCode);
 
         if (!challenge || !userCode) {
             return json({ success: false, error: 'Faltan datos para la verificación.' }, { status: 400 });
@@ -77,6 +81,19 @@ Responde en formato JSON con: {"isCorrect": boolean, "feedback": "string", "scor
         console.error('Error verificando el reto con IA:', error);
         console.error('API Key disponible:', !!PRIVATE_GOOGLE_API_KEY);
         console.error('Modelo disponible:', !!model);
-        return json({ success: false, error: 'No se pudo verificar el código en este momento.' }, { status: 500 });
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        // Devolver información más específica del error
+        const errorMessage = error.message || 'No se pudo verificar el código en este momento.';
+        return json({ 
+            success: false, 
+            error: errorMessage,
+            details: {
+                hasApiKey: !!PRIVATE_GOOGLE_API_KEY,
+                hasModel: !!model,
+                errorType: error.constructor.name
+            }
+        }, { status: 500 });
     }
 }
