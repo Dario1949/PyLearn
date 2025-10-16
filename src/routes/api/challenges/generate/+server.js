@@ -20,7 +20,7 @@ function cleanJsonString(str) {
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
   try {
-    const { topic = 'funciones básicas', difficulty = 'easy' } = await request.json();
+    const { topic = 'funciones básicas', difficulty = 'easy', moduleId = null } = await request.json();
 
     // --- ¡MEJORA CLAVE! ---
     // 3. Leemos la plantilla del prompt desde Supabase
@@ -40,7 +40,7 @@ export async function POST({ request }) {
     // 6. Guardamos el nuevo reto en Supabase
     const mappedChallenge = {
       id: newChallenge.id,
-      module_id: newChallenge.moduleId,
+      module_id: moduleId || newChallenge.moduleId, // Usar moduleId si se proporciona
       title: newChallenge.title,
       description: newChallenge.description,
       category: newChallenge.category,
@@ -50,6 +50,8 @@ export async function POST({ request }) {
       code: newChallenge.code,
       test_cases: newChallenge.testCases
     };
+    
+    console.log('Guardando reto con module_id:', mappedChallenge.module_id);
 
     await supabase.from('challenges').upsert(mappedChallenge);
 

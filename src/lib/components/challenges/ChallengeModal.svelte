@@ -122,8 +122,8 @@
     if (isCorrect) {
       console.log('submitSolution llamado, challenge.id:', challenge.id);
       showToast(`¡Reto completado! Has ganado ${challenge.points} puntos.`, 'success');
-      console.log('Llamando onComplete');
-      onComplete();
+      console.log('Llamando onComplete con ID:', challenge.id);
+      onComplete(challenge.id);
     } else {
       console.log('submitSolution llamado pero isCorrect es false');
     }

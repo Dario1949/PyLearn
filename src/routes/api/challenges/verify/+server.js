@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase.js';
 
 // 1. Leemos la clave de API de forma segura desde las variables de entorno
-import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
+import { PRIVATE_GOOGLE_API_KEY, PRIVATE_GOOGLE_MODEL } from '$env/static/private';
 
 // Validar que la API key existe
 if (!PRIVATE_GOOGLE_API_KEY) {
@@ -12,7 +12,7 @@ if (!PRIVATE_GOOGLE_API_KEY) {
 
 // Inicializa el cliente de IA
 const genAI = PRIVATE_GOOGLE_API_KEY ? new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY) : null;
-const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-pro' }) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: PRIVATE_GOOGLE_MODEL }) : null;
 
 
 

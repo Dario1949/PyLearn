@@ -30,7 +30,7 @@
   const diffClass = $derived(
     difficultyColors[difficulty] ?? "bg-muted text-muted-foreground",
   );
-  const lessonsCount = $derived(module?.lessons?.length ?? 0);
+  const lessonsCount = $derived(module?.lessonsCount ?? module?.lessons?.length ?? 0);
 </script>
 
 <a

@@ -33,8 +33,10 @@
 	// lista a mostrar (reactiva)
 	$: displayChallenges = (allChallenges || [])
 		.map((challenge) => {
-			const completed = user?.completedChallenges?.includes(challenge.id) ?? false;
-			console.log(`Challenge ${challenge.id}: completed = ${completed}`, user?.completedChallenges);
+			// Usar el campo correcto del usuario
+			const userCompletedChallenges = user?.completedChallenges || user?.completed_challenges || [];
+			const completed = userCompletedChallenges.includes(challenge.id) ?? false;
+			console.log(`Challenge ${challenge.id}: completed = ${completed}`, userCompletedChallenges);
 			return {
 				...challenge,
 				completed
@@ -101,49 +103,70 @@
 	}
 
 	async function onComplete(completedChallengeId) {
-		console.log('onComplete llamado con ID:', completedChallengeId);
+		console.log('=== INICIO onComplete ===');
+		console.log('Challenge ID recibido:', completedChallengeId);
+		console.log('Tipo del ID:', typeof completedChallengeId);
+		console.log('Todos los challenges disponibles:', allChallenges.map(c => ({ id: c.id, title: c.title })));
+		console.log('Usuario actual:', user);
 
 		const challenge = allChallenges.find(
 			(c) => c.id === completedChallengeId,
 		);
+		console.log('Challenge encontrado:', challenge);
+		
 		if (!challenge || !user) {
-			console.log('Challenge o user no encontrado:', { challenge, user: user });
+			console.log('Challenge o user no encontrado:', { challenge, user });
 			return;
 		}
 
-		console.log('Enviando datos a API:', {
+		const payload = {
 			userId: user.id,
 			challengeId: challenge.id,
-			points: challenge.points
-		});
+			challengeDifficulty: challenge.difficulty || 'medium',
+			points: challenge.points || 5
+		};
+		console.log('Payload a enviar:', payload);
 
 		try {
-			// Usar la misma API que funciona en módulos
 			const response = await fetch('/api/progress/complete-challenge', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					userId: user.id,
-					challengeId: challenge.id,
-					challengeDifficulty: challenge.difficulty || 'medium',
-					points: challenge.points || 5
-				})
+				body: JSON.stringify(payload)
 			});
 
+			console.log('Response status:', response.status);
 			const result = await response.json();
-			console.log('Respuesta de API:', result);
+			console.log('Respuesta completa de API:', result);
+			
 			if (result.success) {
-				console.log('Recargando progreso del usuario...');
-				// Recargar el progreso del usuario en el store con un pequeño delay
+				console.log('✅ Reto completado exitosamente');
+				console.log('Progreso actualizado:', result.progress);
+				
+				// Actualizar el estado local inmediatamente
+				const updatedChallenges = allChallenges.map(c => 
+					c.id === challenge.id ? { ...c, completed: true } : c
+				);
+				allChallenges = updatedChallenges;
+				
+				// Actualizar el usuario inmediatamente
+				await authStore.loadUserProgress(user.id);
+				console.log('Progreso recargado');
+				
+				// Verificar el estado actualizado
 				setTimeout(() => {
-					authStore.loadUserProgress(user.id);
-				}, 100);
+					const updatedUser = $state.user;
+					console.log('Usuario después de actualizar:', updatedUser);
+					console.log('Challenges completados:', updatedUser?.completedChallenges || updatedUser?.completed_challenges);
+				}, 200);
 			} else {
-				console.error('API retornó error:', result.error);
+				console.error('❌ API retornó error:', result.error);
+				alert('Error: ' + result.error);
 			}
 		} catch (error) {
-			console.error('Error al completar reto:', error);
+			console.error('❌ Error de red al completar reto:', error);
+			alert('Error de conexión');
 		}
+		console.log('=== FIN onComplete ===');
 		onClose();
 	}
 
