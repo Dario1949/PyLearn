@@ -7,7 +7,7 @@ import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
 
 // Inicializa el cliente de IA
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
 
 
 
