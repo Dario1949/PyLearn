@@ -139,11 +139,14 @@ export async function PUT({ request, locals }) {
     }
 
     // ---- PROCESO AVATAR (si viene en dataURL) ----
+    console.log('Avatar en updates:', updates.avatar ? 'presente' : 'ausente');
+    
     if (
       typeof updates.avatar === "string" &&
       updates.avatar.startsWith("data:image")
     ) {
       try {
+        console.log('Procesando avatar base64...');
         const matches = updates.avatar.match(
           /^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/
         );
@@ -153,12 +156,14 @@ export async function PUT({ request, locals }) {
         // Validar tamaño del base64 (aproximadamente 2MB)
         const base64Data = matches[2];
         const sizeInBytes = (base64Data.length * 3) / 4;
+        console.log('Tamaño de imagen:', Math.round(sizeInBytes / 1024), 'KB');
+        
         if (sizeInBytes > 2 * 1024 * 1024) {
           throw new Error("Imagen demasiado grande (máximo 2MB)");
         }
 
         // Guardar directamente el data URL en la base de datos
-        updates.avatar = updates.avatar;
+        console.log('Avatar procesado correctamente');
       } catch (e) {
         console.error("Error al procesar el avatar:", e);
         return new Response(
@@ -177,6 +182,7 @@ export async function PUT({ request, locals }) {
     }
 
     // Guardar cambios en Supabase
+    console.log('Actualizando usuario con:', Object.keys(updates));
     const { data: updatedUser, error: updateError } = await supabase
       .from('users')
       .update(updates)
@@ -184,7 +190,12 @@ export async function PUT({ request, locals }) {
       .select()
       .single();
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('Error actualizando en Supabase:', updateError);
+      throw updateError;
+    }
+    
+    console.log('Usuario actualizado exitosamente');
 
     return new Response(JSON.stringify({ success: true, user: updatedUser }), {
       status: 200,
