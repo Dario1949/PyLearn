@@ -1,7 +1,7 @@
 // src/routes/api/forum/verify-answer/+server.js
 import { json } from "@sveltejs/kit";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { PRIVATE_GOOGLE_API_KEY, PRIVATE_GOOGLE_MODEL } from "$env/static/private";
+import { PRIVATE_GOOGLE_API_KEY } from "$env/static/private";
 import { supabase } from '$lib/supabase.js';
 
 // --- IA ---
@@ -9,7 +9,7 @@ if (!PRIVATE_GOOGLE_API_KEY) {
   console.warn("[verify-answer] Falta PRIVATE_GOOGLE_API_KEY");
 }
 const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: PRIVATE_GOOGLE_MODEL });
+const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
 // --- Template fallback robusto ---
 const DEFAULT_VERIFY_TEMPLATE = `
