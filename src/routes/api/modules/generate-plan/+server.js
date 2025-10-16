@@ -13,7 +13,7 @@ export async function POST({ request }) {
 
     // Activamos el "Modo JSON" para asegurar que la respuesta de la IA sea válida
     const model = genAI.getGenerativeModel({
-      model: 'gemini-pro',
+      model: 'gemini-1.5-flash',
       generationConfig: {
         responseMimeType: 'application/json'
       }
@@ -91,7 +91,7 @@ export async function POST({ request }) {
         
         // Si no hay reto generado, crear uno nuevo
         if (!challengeToInsert) {
-          const challengeModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
+          const challengeModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
           const { data: challengePrompts } = await supabase.from('prompts').select('*').eq('key', 'generarReto').single();
           
           if (challengePrompts?.content) {
