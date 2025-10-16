@@ -1,20 +1,24 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { json } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase.js';
 
-// 1. Leemos la clave de API de forma segura desde las variables de entorno
-import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
-
-// Inicializa el cliente de IA
-const genAI = new GoogleGenerativeAI(PRIVATE_GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-
-
-// Función para limpiar la respuesta de la IA si viene envuelta en markdown
-function cleanJsonString(str) {
-  const match = str.match(/```json\s*([\s\S]*?)\s*```/);
-  return match ? match[1].trim() : str.trim();
+// Función para generar un challenge básico
+function generateBasicChallenge(topic, difficulty, moduleId) {
+  const challengeId = `challenge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  return {
+    id: challengeId,
+    moduleId: moduleId,
+    title: `Reto de ${topic}`,
+    description: `Resuelve este ejercicio de ${topic} con nivel ${difficulty}`,
+    category: "programming",
+    difficulty: difficulty,
+    points: difficulty === 'easy' ? 50 : difficulty === 'medium' ? 75 : 100,
+    timeLimit: 30,
+    code: "# Escribe tu código aquí\nprint('Hola mundo')",
+    testCases: [
+      { input: "", expected: "Hola mundo" }
+    ]
+  };
 }
 
 /** @type {import('./$types').RequestHandler} */
@@ -22,25 +26,13 @@ export async function POST({ request }) {
   try {
     const { topic = 'funciones básicas', difficulty = 'easy', moduleId = null } = await request.json();
 
-    // --- ¡MEJORA CLAVE! ---
-    // 3. Leemos la plantilla del prompt desde Supabase
-    const { data: prompts } = await supabase.from('prompts').select('*').eq('key', 'generarReto').single();
-    let promptTemplate = prompts.content;
+    // Generar challenge básico
+    const newChallenge = generateBasicChallenge(topic, difficulty, moduleId);
 
-    // 4. Reemplazamos las variables en la plantilla con los valores recibidos
-    const prompt = promptTemplate
-      .replace('{topic}', topic)
-      .replace('{difficulty}', difficulty);
-
-    // 5. Llamamos al modelo de IA con el prompt dinámico
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    const newChallenge = JSON.parse(cleanJsonString(responseText));
-
-    // 6. Guardamos el nuevo reto en Supabase
+    // Guardar el nuevo reto en Supabase
     const mappedChallenge = {
       id: newChallenge.id,
-      module_id: moduleId || newChallenge.moduleId, // Usar moduleId si se proporciona
+      module_id: moduleId || newChallenge.moduleId,
       title: newChallenge.title,
       description: newChallenge.description,
       category: newChallenge.category,
@@ -51,14 +43,12 @@ export async function POST({ request }) {
       test_cases: newChallenge.testCases
     };
     
-    console.log('Guardando reto con module_id:', mappedChallenge.module_id);
-
     await supabase.from('challenges').upsert(mappedChallenge);
 
     return json({ success: true, challenge: newChallenge });
 
   } catch (error) {
-    console.error('Error generando y guardando el reto con IA:', error);
-    return json({ success: false, error: 'No se pudo generar el reto en este momento.' }, { status: 500 });
+    console.error('Error generando reto:', error);
+    return json({ success: false, error: 'No se pudo generar el reto.' }, { status: 500 });
   }
 }
