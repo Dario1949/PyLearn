@@ -308,21 +308,37 @@
     if (!user()) return;
     error = "";
 
-    const updatedData = {
-      email: user().email,
-      name: tempName,
-      bio: tempBio,
-    };
-
-    if (
-      avatarFile &&
-      typeof tempAvatar === "string" &&
-      tempAvatar.startsWith("data:image")
-    ) {
-      updatedData.avatar = tempAvatar;
-    }
-
     try {
+      let avatarUrl = user().avatar; // Mantener avatar actual por defecto
+
+      // Si hay un nuevo archivo de avatar, subirlo primero
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', avatarFile);
+
+        const uploadRes = await fetch('/api/profile/upload-avatar', {
+          method: 'POST',
+          body: formData
+        });
+
+        const uploadData = await uploadRes.json();
+        
+        if (uploadRes.ok && uploadData.success) {
+          avatarUrl = uploadData.avatarUrl;
+        } else {
+          error = uploadData.error || 'Error al subir el avatar';
+          return;
+        }
+      }
+
+      // Actualizar información del perfil
+      const updatedData = {
+        email: user().email,
+        name: tempName,
+        bio: tempBio,
+        avatar: avatarUrl
+      };
+
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -333,14 +349,14 @@
 
       if (res.ok && data?.success) {
         // Actualiza auth global
-        authStore.loadUserProgress(user().id)
+        authStore.loadUserProgress(user().id);
         authStore.state.update((current) => ({
           ...current,
           user: data.user,
         }));
         editMode = false;
         avatarFile = null;
-        refreshEntitlements(); // refresca puntos y desbloqueos tras guardar
+        refreshEntitlements();
       } else {
         if (res.status === 403 && data?.required) {
           error = `${data.error} (Requiere: ${data.required}, ${data.cost} pts)`;

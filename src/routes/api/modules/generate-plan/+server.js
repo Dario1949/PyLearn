@@ -53,20 +53,84 @@ export async function POST({ request }) {
       await supabase.from('modules').insert(mappedModules);
     }
 
-    if (generatedData.challenges) {
-      const mappedChallenges = generatedData.challenges.map(c => ({
-        id: c.id,
-        module_id: c.moduleId,
-        title: c.title,
-        description: c.description,
-        category: c.category,
-        difficulty: c.difficulty,
-        points: c.points,
-        time_limit: c.timeLimit,
-        code: c.code,
-        test_cases: c.testCases
-      }));
-      await supabase.from('challenges').insert(mappedChallenges);
+    // Buscar módulos existentes sin retos y agregar a la lista de procesamiento
+    const { data: existingModules } = await supabase
+      .from('modules')
+      .select('*')
+      .is('challenge_id', null);
+    
+    const allModulesToProcess = [...(generatedData.modules || [])];
+    if (existingModules?.length > 0) {
+      allModulesToProcess.push(...existingModules);
+      console.log(`Encontrados ${existingModules.length} módulos existentes sin retos`);
+    }
+
+    // Generar retos para todos los módulos
+    for (const module of allModulesToProcess) {
+      try {
+        let challengeToInsert = null;
+        
+        // Para módulos nuevos, intentar usar el reto generado por IA
+        if (generatedData.challenges && generatedData.modules?.some(m => m.id === module.id)) {
+          const moduleChallenge = generatedData.challenges.find(c => c.moduleId === module.id);
+          if (moduleChallenge) {
+            challengeToInsert = {
+              id: moduleChallenge.id,
+              module_id: module.id,
+              title: moduleChallenge.title,
+              description: moduleChallenge.description,
+              category: moduleChallenge.category,
+              difficulty: moduleChallenge.difficulty,
+              points: moduleChallenge.points,
+              time_limit: moduleChallenge.timeLimit,
+              code: moduleChallenge.code,
+              test_cases: moduleChallenge.testCases
+            };
+          }
+        }
+        
+        // Si no hay reto generado, crear uno nuevo
+        if (!challengeToInsert) {
+          const challengeModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
+          const { data: challengePrompts } = await supabase.from('prompts').select('*').eq('key', 'generarReto').single();
+          
+          if (challengePrompts?.content) {
+            const challengePrompt = challengePrompts.content
+              .replace('{topic}', module.title)
+              .replace('{difficulty}', module.difficulty || 'medium');
+            
+            const challengeResult = await challengeModel.generateContent(challengePrompt);
+            const challengeText = challengeResult.response.text();
+            const cleanedText = challengeText.match(/```json\s*([\s\S]*?)\s*```/) ? 
+              challengeText.match(/```json\s*([\s\S]*?)\s*```/)[1].trim() : challengeText.trim();
+            
+            const generatedChallenge = JSON.parse(cleanedText);
+            
+            challengeToInsert = {
+              id: generatedChallenge.id,
+              module_id: module.id,
+              title: generatedChallenge.title,
+              description: generatedChallenge.description,
+              category: generatedChallenge.category,
+              difficulty: generatedChallenge.difficulty,
+              points: generatedChallenge.points,
+              time_limit: generatedChallenge.timeLimit,
+              code: generatedChallenge.code,
+              test_cases: generatedChallenge.testCases
+            };
+          }
+        }
+        
+        // Insertar el reto y actualizar el módulo
+        if (challengeToInsert) {
+          await supabase.from('challenges').insert(challengeToInsert);
+          await supabase.from('modules').update({ challenge_id: challengeToInsert.id }).eq('id', module.id);
+          console.log(`Reto ${challengeToInsert.id} asociado al módulo ${module.title}`);
+        }
+        
+      } catch (error) {
+        console.error(`Error generando reto para módulo ${module.title}:`, error);
+      }
     }
 
     if (generatedData.lessons) {

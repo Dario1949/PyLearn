@@ -4,9 +4,26 @@ import { supabase } from '$lib/supabase.js';
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
 	try {
+		// Obtener módulos con conteo de lecciones
 		const { data: modules, error } = await supabase.from('modules').select('*');
 		if (error) throw error;
-		return json({ modules: modules || [] });
+
+		// Obtener conteo de lecciones para cada módulo
+		const modulesWithLessons = await Promise.all(
+			(modules || []).map(async (module) => {
+				const { count } = await supabase
+					.from('lessons')
+					.select('*', { count: 'exact', head: true })
+					.eq('module_id', module.id);
+				
+				return {
+					...module,
+					lessonsCount: count || 0
+				};
+			})
+		);
+
+		return json({ modules: modulesWithLessons });
 	} catch (error) {
 		console.error('Error al leer los módulos:', error);
 		return json({ error: 'No se pudieron cargar los módulos.' }, { status: 500 });
