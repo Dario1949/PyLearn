@@ -147,31 +147,29 @@ export async function PUT({ request, locals }) {
     }
 
     // ---- PROCESO AVATAR (si viene en dataURL) ----
-    console.log('Avatar en updates:', updates.avatar ? 'presente' : 'ausente');
-    
     if (
       typeof updates.avatar === "string" &&
       updates.avatar.startsWith("data:image")
     ) {
       try {
-        console.log('Procesando avatar base64...');
         const matches = updates.avatar.match(
           /^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/
         );
         if (!matches || matches.length !== 3)
           throw new Error("Formato de avatar inválido");
-        
-        // Validar tamaño del base64 (aproximadamente 2MB)
-        const base64Data = matches[2];
-        const sizeInBytes = (base64Data.length * 3) / 4;
-        console.log('Tamaño de imagen:', Math.round(sizeInBytes / 1024), 'KB');
-        
-        if (sizeInBytes > 2 * 1024 * 1024) {
-          throw new Error("Imagen demasiado grande (máximo 2MB)");
-        }
+        let ext = matches[1].toLowerCase();
+        if (ext === "jpeg") ext = "jpg";
+        if (ext === "svg+xml") ext = "svg";
 
-        // Guardar directamente el data URL en la base de datos
-        console.log('Avatar procesado correctamente');
+        const base64Data = matches[2];
+        const buffer = Buffer.from(base64Data, "base64");
+
+        ensureDir(uploadsDir);
+        const fileName = `${email.split("@")[0]}-${Date.now()}.${ext}`;
+        const filePath = path.join(uploadsDir, fileName);
+        fs.writeFileSync(filePath, buffer);
+
+        updates.avatar = `/uploads/avatars/${fileName}`;
       } catch (e) {
         console.error("Error al guardar el avatar:", e);
         return new Response(
@@ -190,7 +188,6 @@ export async function PUT({ request, locals }) {
     }
 
     // Guardar cambios en Supabase
-    console.log('Actualizando usuario con:', Object.keys(updates));
     const { data: updatedUser, error: updateError } = await supabase
       .from('users')
       .update(updates)
@@ -198,12 +195,7 @@ export async function PUT({ request, locals }) {
       .select()
       .single();
 
-    if (updateError) {
-      console.error('Error actualizando en Supabase:', updateError);
-      throw updateError;
-    }
-    
-    console.log('Usuario actualizado exitosamente');
+    if (updateError) throw updateError;
 
     return new Response(JSON.stringify({ success: true, user: updatedUser }), {
       status: 200,
