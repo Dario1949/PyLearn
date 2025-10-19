@@ -38,33 +38,15 @@ export async function POST({ request, cookies }) {
       return json({ success: false, error: 'El archivo es demasiado grande (máximo 2MB)' }, { status: 400 });
     }
 
-    // Generar nombre único para el archivo
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
-
-    // Subir archivo a Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: true
-      });
-
-    if (uploadError) {
-      console.error('Error subiendo archivo:', uploadError);
-      return json({ success: false, error: 'Error al subir la imagen' }, { status: 500 });
-    }
-
-    // Obtener URL pública del archivo
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
+    // Convertir archivo a base64
+    const arrayBuffer = await file.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    const avatarUrl = `data:${file.type};base64,${base64}`;
 
     // Actualizar avatar del usuario en la base de datos
     const { error: updateError } = await supabase
       .from('users')
-      .update({ avatar: publicUrl })
+      .update({ avatar: avatarUrl })
       .eq('id', user.id);
 
     if (updateError) {
@@ -74,7 +56,7 @@ export async function POST({ request, cookies }) {
 
     return json({ 
       success: true, 
-      avatarUrl: publicUrl,
+      avatarUrl,
       message: 'Avatar actualizado correctamente'
     });
 
