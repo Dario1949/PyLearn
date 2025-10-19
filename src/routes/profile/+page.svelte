@@ -240,7 +240,7 @@
   );
 
   const lastActivityLabel = $derived(() => {
-    const d = progress?.lastActivity;
+    const d = progress?.last_activity;
     if (d) {
       try {
         return new Date(d).toLocaleDateString("es-ES", {
