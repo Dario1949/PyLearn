@@ -1,13 +1,5 @@
 // src/routes/api/profile/+server.js
-import fs from "fs";
-import path from "path";
 import { supabase } from '$lib/supabase.js';
-
-const uploadsDir = path.resolve("uploads/avatars");
-
-function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
 
 export async function PUT({ request, locals }) {
   try {
@@ -164,12 +156,24 @@ export async function PUT({ request, locals }) {
         const base64Data = matches[2];
         const buffer = Buffer.from(base64Data, "base64");
 
-        ensureDir(uploadsDir);
+        // Subir a Supabase Storage
         const fileName = `${email.split("@")[0]}-${Date.now()}.${ext}`;
-        const filePath = path.join(uploadsDir, fileName);
-        fs.writeFileSync(filePath, buffer);
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, buffer, {
+            contentType: `image/${ext}`,
+            cacheControl: '3600',
+            upsert: true
+          });
 
-        updates.avatar = `/uploads/avatars/${fileName}`;
+        if (uploadError) throw uploadError;
+
+        // Obtener URL pública
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        updates.avatar = publicUrl;
       } catch (e) {
         console.error("Error al guardar el avatar:", e);
         return new Response(

@@ -1,9 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-
-const storeCatalogPath = path.resolve('src/lib/data/store-catalog.json');
-const purchasesPath = path.resolve('src/lib/data/purchases.json');
-const progressPath = path.resolve('src/lib/data/progress.json');
+import { supabase } from '$lib/supabase.js';
 
 export async function POST({ request }) {
   try {
@@ -16,14 +11,11 @@ export async function POST({ request }) {
       });
     }
 
-    // Cargar datos
-    const catalog = JSON.parse(fs.readFileSync(storeCatalogPath, 'utf-8'));
-    const purchases = fs.existsSync(purchasesPath) 
-      ? JSON.parse(fs.readFileSync(purchasesPath, 'utf-8')) 
-      : [];
-    const progressData = JSON.parse(fs.readFileSync(progressPath, 'utf-8'));
+    // Cargar datos desde Supabase
+    const { data: catalog } = await supabase.from('store_catalog').select('*');
+    const { data: purchases } = await supabase.from('purchases').select('*').eq('user_id', userId);
+    const { data: userProgress } = await supabase.from('progress').select('*').eq('user_id', userId).single();
     
-    const userProgress = progressData.find(p => p.userId === userId);
     if (!userProgress) {
       return new Response(JSON.stringify({ success: false, error: 'Progreso no encontrado' }), {
         status: 404,
@@ -35,31 +27,30 @@ export async function POST({ request }) {
     const achievementAvatars = catalog.filter(item => item.type === 'achievement_avatar');
     
     // Verificar qué avatares debe tener desbloqueados
-    const modulesCompleted = userProgress.completedModules?.length || 0;
+    const modulesCompleted = userProgress.completed_modules?.length || 0;
     const newUnlocks = [];
     
     for (const avatar of achievementAvatars) {
       if (avatar.requirement === 'modules_completed' && modulesCompleted >= avatar.threshold) {
         // Verificar si ya lo tiene
-        const alreadyUnlocked = purchases.some(p => p.userId === userId && p.itemId === avatar.id);
+        const alreadyUnlocked = purchases?.some(p => p.item_id === avatar.id);
         
         if (!alreadyUnlocked) {
           // Desbloquear automáticamente
-          purchases.push({
-            id: `${userId}-${avatar.id}-${Date.now()}`,
-            userId,
-            itemId: avatar.id,
+          const { error } = await supabase.from('purchases').insert({
+            user_id: userId,
+            item_id: avatar.id,
             cost: 0,
-            purchaseDate: new Date().toISOString(),
+            purchase_date: new Date().toISOString(),
             type: 'achievement_unlock'
           });
-          newUnlocks.push(avatar);
+          
+          if (!error) {
+            newUnlocks.push(avatar);
+          }
         }
       }
     }
-
-    // Guardar compras actualizadas
-    fs.writeFileSync(purchasesPath, JSON.stringify(purchases, null, 2));
 
     return new Response(JSON.stringify({ 
       success: true, 
