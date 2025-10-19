@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { PRIVATE_GOOGLE_API_KEY } from '$env/static/private';
+import { PRIVATE_GOOGLE_API_KEY, PRIVATE_GOOGLE_MODEL } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase.js';
 
@@ -13,7 +13,7 @@ export async function POST({ request }) {
 
     // Activamos el "Modo JSON" para asegurar que la respuesta de la IA sea válida
     const model = genAI.getGenerativeModel({
-      model: 'gemini-pro',
+      model: PRIVATE_GOOGLE_MODEL,
       generationConfig: {
         responseMimeType: 'application/json'
       }
@@ -91,7 +91,7 @@ export async function POST({ request }) {
         
         // Si no hay reto generado, crear uno nuevo
         if (!challengeToInsert) {
-          const challengeModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
+          const challengeModel = genAI.getGenerativeModel({ model: PRIVATE_GOOGLE_MODEL });
           const { data: challengePrompts } = await supabase.from('prompts').select('*').eq('key', 'generarReto').single();
           
           if (challengePrompts?.content) {
