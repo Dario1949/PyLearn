@@ -153,27 +153,8 @@ export async function PUT({ request, locals }) {
         if (ext === "jpeg") ext = "jpg";
         if (ext === "svg+xml") ext = "svg";
 
-        const base64Data = matches[2];
-        const buffer = Buffer.from(base64Data, "base64");
-
-        // Subir a Supabase Storage
-        const fileName = `${email.split("@")[0]}-${Date.now()}.${ext}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, buffer, {
-            contentType: `image/${ext}`,
-            cacheControl: '3600',
-            upsert: true
-          });
-
-        if (uploadError) throw uploadError;
-
-        // Obtener URL pública
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-
-        updates.avatar = publicUrl;
+        // Mantener el avatar como base64 en la base de datos
+        // No es necesario procesar más, ya viene en formato correcto
       } catch (e) {
         console.error("Error al guardar el avatar:", e);
         return new Response(
